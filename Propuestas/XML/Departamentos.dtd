@@ -1,0 +1,4 @@
+<!ELEMENT Departamentos (Departamento+)>
+<!ELEMENT Departamento (id, Nombre)>
+<!ELEMENT id (#PCDATA)>
+<!ELEMENT Nombre (#PCDATA)>
