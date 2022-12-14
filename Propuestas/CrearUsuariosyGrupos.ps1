@@ -6,9 +6,8 @@ foreach ($group in $file_groups) {
 $file_users=Import-Csv -Path empleado.csv 
 foreach ($user in $file_users) { 
   $clave=ConvertTo-SecureString $user.contraseña -AsPlainText -Force
-  New-LocalUser $user.cuenta -Password $clave -FullName $user.nombre_apellidos -Description $user.descripcion -AccountNeverExpires 
+  New-LocalUser $user.cuenta -Password $clave -FullName $user.nombre_apellidos -PasswordNeverExpires $false -Description $user.descripcion -AccountNeverExpires 
   
-  Set-LocalUser $user.cuenta -PasswordNeverExpires $false
   net user $user.cuenta /logonpasswordchg:yes
 
 
