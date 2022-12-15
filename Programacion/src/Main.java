@@ -10,19 +10,19 @@ public class Main {
 	public static File carpeta = new File("./Programacion/CSVs");
 	public static ArrayList<Empleado> empleados = new ArrayList<>();
 	public static ArrayList<Departamento> departamentos = new ArrayList<>();
+
+	public static String camposCSVEmpleados = new String();
 	public static int eleccion;
 
 
-
 	public static void main(String[] args) {
-		//Menu();
-		LeerCarpeta();
-		//buscarEmpleadoCategoria("A3");
-		empleadosPorDepart();
+		leerCarpeta();
+		menu();
+
 	}
 
 
-
+	//------------- Funciones Basicas -------------
 
 	/**
 	 * @author Óscar Fernandez
@@ -46,6 +46,13 @@ public class Main {
 
 	}
 
+	public static ArrayList<String> stringArrayToArrayList(String[] array) {
+		ArrayList<String> arrayList = new ArrayList<>();
+		for (String string: array) {
+			arrayList.add(string);
+		}
+		return arrayList;
+	}
 
 	/**
 	 * @author Óscar Fernandez
@@ -65,19 +72,39 @@ public class Main {
 
 	}
 
+	/**
+	 * @author Óscar Fernandez
+	 */
+	public static int obtenerIndice(ArrayList<ArrayList<String>> datosCSV, String campoABuscar) {
+		return datosCSV.get(0).indexOf(campoABuscar);
+	}
+
+	/**
+	 * @author Jonathan Taban
+	 */
+	public static int limpiarPantalla(){
+		leerCadena("\nApreta Entrer para continuar:");
+
+		for(int x=0; x<50; x++){
+			System.out.println(" ");
+		}
+		return 0;
+	}
+
+	//------------- Abrir Archivos -------------
+
 	//Leemos un string introducido por el usuario
 
 	/**
 	 * @author Óscar Fernandez
 	 */
-
-	public static void LeerCarpeta() {
+	public static void leerCarpeta() {
 
 		for (File archivo: carpeta.listFiles()) {
 
 			switch (archivo.getName()) {
 
-				
+
 				case "Empleado.csv":
 
 					cargarEmpleados(archivo);
@@ -94,6 +121,7 @@ public class Main {
 
 
 	}
+
 	/**
 	 * @author Óscar Fernandez
 	 */
@@ -116,7 +144,18 @@ public class Main {
 	 */
 	//Cargamos los empleados a memoria
 	private static void cargarEmpleados(File archivo) {
+
 		ArrayList<ArrayList<String>> datosEmpleados = leerCsv(archivo.getPath());
+
+
+		for (int i = 0; i < datosEmpleados.get(0).size() - 1; i++) {
+			String dato = datosEmpleados.get(0).get(i);
+
+			camposCSVEmpleados += dato + ";";
+
+		}
+		camposCSVEmpleados += datosEmpleados.get(0).get(datosEmpleados.get(0).size() - 1);
+
 
 
 		for (int i = 1; i < datosEmpleados.size(); i++) {
@@ -140,14 +179,6 @@ public class Main {
 			empleados.add(empleado);
 		}
 	}
-
-	/**
-	 * @author Óscar Fernandez
-	 */
-	public static int obtenerIndice(ArrayList<ArrayList<String>> datosCSV, String campoABuscar) {
-		return datosCSV.get(0).indexOf(campoABuscar);
-	}
-
 
 
 	/**
@@ -189,10 +220,23 @@ public class Main {
 
 	}
 
+	//------------- Consultas -------------
+
+	/**
+	 * @author Jose Vicente
+	 */
+	public static void buscarEmpleadoCategoria(String categoria) {
+		for (Empleado empleado: empleados) {
+			if (empleado.catGrupProfesional.equals(categoria)) {
+				imprimirDatosEmpleado(empleado);
+			}
+		}
+	}
+
 	/**
 	 * @author Óscar Fernandez
 	 */
-	public static void imprimirDatosEmpleado(Empleado empleado){
+	public static void imprimirDatosEmpleado(Empleado empleado) {
 
 		System.out.println("\n");
 		System.out.println("Id: " + empleado.id);
@@ -206,7 +250,7 @@ public class Main {
 
 		for (int i = 0; i < departamentos.size(); i++) {
 
-			if(departamentos.get(i).id == empleado.departamento){
+			if (departamentos.get(i).id == empleado.departamento) {
 
 				System.out.println("Departamento: " + departamentos.get(i).nombre);
 
@@ -219,7 +263,7 @@ public class Main {
 	/**
 	 * @author Óscar Fernandez
 	 */
-	public static void empleadosPorDepart(){
+	public static void cantEmpleadosPorDepart() {
 		// Creamos un array que inicializamos en 0 donde guardaremos la cantidad de empleados por departamento
 		Integer[] numEmpleados = new Integer[departamentos.size()];
 		for (int i = 0; i < numEmpleados.length; i++) {
@@ -227,8 +271,8 @@ public class Main {
 		}
 
 		//Contamos la cantidad de empleados por departamento
-		for (Empleado empleado : empleados) {
-			numEmpleados[empleado.departamento-1] +=1;
+		for (Empleado empleado: empleados) {
+			numEmpleados[empleado.departamento - 1] += 1;
 		}
 
 		//Imprimimos la cantidad de empleado por departamento
@@ -242,9 +286,10 @@ public class Main {
 	/**
 	 * @author Óscar Fernandez
 	 */
-	public static void buscarEmpleadoDNI(String dni){
-		for (Empleado empleado : empleados) {
-			if (empleado.dni.equals( dni)){
+	public static void buscarEmpleadoDNI() {
+		String dni = leerCadena("Introduce el DNI del empleado a buscar: ");
+		for (Empleado empleado: empleados) {
+			if (empleado.dni.equals(dni)) {
 				imprimirDatosEmpleado(empleado);
 			}
 		}
@@ -253,34 +298,244 @@ public class Main {
 	/**
 	 * @author Jose Vicente
 	 */
-	public static void buscarEmpleadoID(int id){
-		for (Empleado empleado : empleados) {
-			if (empleado.id == id){
-				imprimirDatosEmpleado(empleado);
+	public static Empleado buscarEmpleadoID(int id) {
+		for (Empleado empleado: empleados) {
+			if (empleado.id == id) {
+				return empleado;
 			}
 		}
+	return null;
+	}
+	/**
+	 * @author Jose Vicente Ebri
+	 */
+
+	public static void buscarEmpleadoPorDepartamento() {
+		int id = leerEntero("Introduce el ID del departamento");
+		for (Empleado empleado: empleados) {
+			if (empleado.departamento == id) {
+				System.out.println("ID: " + empleado.id + "\t" + "Empleado: " + empleado.nombre + String.format("\t\t%-10s", "") + "Departamento: " + departamentos.get(id).nombre);
+			}
+		}
+	}
+
+	//------------- Incorporaciones -------------
+
+	/**
+	 * @author Óscar Fernandez
+	 */
+	public static void incorporarTrabajador() {
+		Empleado empleado = crearEmpleado();
+		empleados.add(empleado);
+	}
+
+	private static Empleado crearEmpleado() {
+		int id = empleados.get(empleados.size() - 1).id + 1;
+		String dni = leerCadena("Introduce el DNI del empleado: ");
+		String nombre = leerCadena("Introduce el nombre del empleado: ");
+		String apellido1 = leerCadena("Introduce el primer apellido del empleado: ");
+		String apellido2 = leerCadena("Introduce el segundo apellido del empleado: ");
+		String cuenta = leerCadena("Introduce la cuenta del empleado: ");
+		int antiguedad = leerEntero("Introduce la antiguedad del empleado: ");
+		String catGrupProfesional = leerCadena("Introduce la categoria del grupo profesional del empleado: ");
+		String grupCotizacion = leerCadena("Introduce el grupo de cotizacion del empleado: ");
+		int departamento = leerEntero("Introduce el departamento del empleado: ");
+		String email = leerCadena("Introduce el email del empleado: ");
+
+
+		Empleado empleado = new Empleado(id, dni, nombre, apellido1, apellido2, cuenta, catGrupProfesional, grupCotizacion, departamento, email, antiguedad);
+		return empleado;
 	}
 
 	/**
 	 * @author Jose Vicente Ebri
 	 */
-	public static void buscarEmpleadoCategoria(String categoria){
-		for (Empleado empleado : empleados) {
-			if (empleado.catGrupProfesional.equals(categoria)){
-				imprimirDatosEmpleado(empleado);
-			}
-		}
+	public static void incorporarDepartamento() {
+		int id = departamentos.get(departamentos.size() - 1).id + 1;
+		String nombre = leerCadena("Introduce el nombre del departamento ");
+
+
+		Departamento departamento = new Departamento(id, nombre);
+		departamentos.add(departamento);
 	}
+
+	//---------------- Modificar ----------------
+
+
+	/**
+	 * @author Jose Vicente Ebri
+	 */
+	public static void modificarDatosPersonales() {
+		int id = leerEntero("Introduce el ID del empleado a modificar:");
+
+		System.out.println("\nIntroduce los datos modificados: \n");
+		Empleado empleadoAModificar = crearEmpleado();
+
+		empleadoAModificar.id = id;
+		empleados.set(empleados.indexOf(buscarEmpleadoID(id)),empleadoAModificar);
+		for (Empleado empleado : empleados){
+			imprimirDatosEmpleado(empleado);
+		}
+
+
+	}
+
+	//------------- Eliminar -----------------
 
 
 	/**
 	 * @author Pere Prior
-	 * @author Jose Vicente Ebri
 	 */
-	public static void Menu() {
+	public static void eliminarDatosDepartamento() {
+		int id = leerEntero("Introduce el ID del Departamento a eliminar: ");
+
+
+		for (Departamento departamento : departamentos) {
+
+				if(departamento.id == id){
+
+					int numEmpleados = 0;
+					for (Empleado empleado : empleados) {
+
+					    if(empleado.departamento == id){
+							numEmpleados ++;
+						}
+					}
+					if (numEmpleados >0){
+						System.out.println("Vas a aeliminar el departamento " + departamento.nombre + " que tiene " + numEmpleados + " empleados");
+
+						boolean flag =true;
+						while (flag){
+							String decision = leerCadena("Quieres continuar? Si continuas se eliminaran todos los empleados en cascada");
+
+							switch (decision){
+								case "si":
+									flag =false;
+
+									for (Empleado empleado : empleados) {
+									    if (empleado.departamento == id){
+											empleados.remove(empleados.indexOf(empleado));
+										}
+									}
+									break;
+								case "no":
+									flag =false;
+
+									break;
+								default:
+									System.out.println("Introduce una respuesta valida");
+							}
+						}
+
+
+					}
+				}
+
+		}
+	}
+
+	/**
+	 * @author Pere Prior
+	 */
+	public static void eliminarDatosEmpleado () {
+		int id = leerEntero("Introduce el ID del empleado");
+
+		for (Empleado empleado : empleados) {
+			
+
+		}
+
+		if (id > empleados.lastIndexOf(empleados)) {
+				System.out.println("ID incorrecto");
+		} else {
+				empleados.remove(empleados.indexOf(buscarEmpleadoID(id)));
+		}
+
+	}
+
+
+	
+	//------------- Guardar en CSVs -------------
+
+	/**
+	 * @author Óscar Fernandez
+	 */
+	public static void escribirCSVs() {
+		if (empleados != null) {
+			System.out.println("Escribieno CSV de Empleado.csv...");
+			escribirEmpleadosCSV();
+			System.out.println("Done");
+
+		}
+		if (departamentos != null) {
+			System.out.println("Escribieno CSV de Departamento.csv...");
+
+			escribirDepartamentoCSV();
+			System.out.println("Done");
+
+		}
+	}
+
+	/**
+	 * @author Óscar Fernandez
+	 */
+	public static void escribirDepartamentoCSV() {
+
+		File ficheroSalida = new File("./Programacion/CSVs/Departamento.csv");
+
+		try {
+			BufferedWriter flujoSalida = new BufferedWriter(new FileWriter(ficheroSalida));
+
+			flujoSalida.write("id;Nombre");
+			flujoSalida.newLine();
+
+			for (Departamento departamento : departamentos) {
+				flujoSalida.write(departamento.id + ";" + departamento.nombre);
+				flujoSalida.newLine();
+			}
+			flujoSalida.close();
+
+
+		} catch (IOException e) {
+			System.out.println("Error al escribir");
+		}
+	}
+
+	/**
+	 * @author Óscar Fernandez
+	 */
+	public static void escribirEmpleadosCSV() {
+
+		File ficheroSalida = new File("./Programacion/CSVs/Empleado.csv");
+
+		try {
+			BufferedWriter flujoSalida = new BufferedWriter(new FileWriter(ficheroSalida));
+
+			flujoSalida.write("NIF;Nombre;Apellido1;Apellido2;Cuenta;Antiguedad;NSS;Grupo_profesional;Grupo_Cotizacion;Email;Departamento;id");
+			flujoSalida.newLine();
+
+			for (Empleado empleado : empleados) {
+			    flujoSalida.write(empleado.dni + ";" + empleado.nombre + ";" + empleado.apellido1 + ";" + empleado.apellido2 + ";" + empleado.cuenta + ";" + empleado.antiguedad + ";" +""+";" + empleado.catGrupProfesional + ";" + empleado.grupCotizacion + ";" + empleado.email + ";" + empleado.departamento + ";" + empleado.id);
+				flujoSalida.newLine();
+			}
+			flujoSalida.close();
+
+			
+		} catch (IOException e) {
+			System.out.println("Error al escribir");
+		}
+	}
+
+
+	//------------- Menus -------------
+
+	/**
+	 * @author Jonathan
+	 */
+	public static void menu() {
 
 		do {
-			eleccion = leerEntero("<1.- Consultar> <2.- Incorporar> <3.- Modificar/Eliminar> <0.- Salir>");
+			eleccion = leerEntero("1.Consultar | 2.Incorporar | 3.Modificar/Eliminar | 4. Exportar a CSV | 0.Salir");
 
 			switch (eleccion) {
 				case 1:
@@ -292,106 +547,177 @@ public class Main {
 				case 3:
 					menuModificar();
 					break;
+				case 4:
+					escribirCSVs();
+					break;
 				default:
 					System.out.println("Opcion inválida");
 					continue;
 			}
+			limpiarPantalla();
 
 		} while (eleccion != 0);
 		System.out.println("Cerrando el programa...");
 
 	}
 
-	/**
-	 * @author Jose Vicente Ebri
-	 * @author Pere Prior
-	 */
-	public static void menuConsultar(){
-		
+	public static void menuConsultar() {
+
 		do {
-			eleccion = leerEntero("<1.- Datos Empleado> <2.- Horas Extra> <3.- Coste Salarial> <4.- Volver al Inicio> <4.- Salir>");
+			eleccion = leerEntero("1.Datos relacionados a Empleado | 2.Horas Extra | 3.Coste Salarial | 4.Volver al Inicio | 0.Salir");
 
 			switch (eleccion) {
 				case 1:
-					
+					MenuRelacionadoaEmpleado();
 					break;
 				case 2:
-
+					MenuHorasExtra();
 					break;
 				case 3:
-
+					MenuCosteSalarial();
 					break;
 				case 4:
-					Menu();
+					menu();
+					break;
+				default:
+					System.out.println("Se ha cerrado el programa");
+			}
+			limpiarPantalla();
+
+		} while (eleccion != 0);
+	}
+
+	public static void MenuRelacionadoaEmpleado() {
+
+		do {
+			eleccion = leerEntero("1.Mostrar todos los Empleado | 2.Empleado por DNI | 3.Empleado desde Dep. | 4.Numero empleador por Dep. | 5.Datos empleado desde categoria | 6.Volver al Inicio | 0.Salir");
+
+			switch (eleccion) {
+				case 1:
+					for (Empleado empleado: empleados) {
+						imprimirDatosEmpleado(empleado);
+					}
+					break;
+				case 2:
+					buscarEmpleadoDNI();
+					break;
+				case 3:
+					buscarEmpleadoPorDepartamento();
+					break;
+				case 4:
+					cantEmpleadosPorDepart();
+					break;
+				case 5:
+					buscarEmpleadoCategoria(null);
+					break;
+				case 6:
+					menu();
+					break;
+				default:
+					System.out.println("Se ha cerrado el programa");
+			}
+			limpiarPantalla();
+
+		} while (eleccion != 0);
+	}
+
+	public static void MenuHorasExtra() {
+
+		do {
+			eleccion = leerEntero("1.Horas Extra por ID | 2.Horas Extra por DNI | 3.Volver al Inicio | 0.Salir");
+
+			switch (eleccion) {
+				case 1:
+					//Horas Extra por ID
+					break;
+				case 2:
+					//Horas Extra por DNI
+					break;
+				case 3:
+					menu();
+					break;
+				default:
+					System.out.println("Se ha cerrado el programa");
+			}
+			limpiarPantalla();
+
+		} while (eleccion != 0);
+	}
+
+	public static void MenuCosteSalarial() {
+
+		do {
+			eleccion = leerEntero("1.Coste Salarial por Grupo Cotizacion | 2.Coste Salarial desde Nombre | 3.Volver al Inicio | 0.Salir");
+
+			switch (eleccion) {
+				case 1:
+					//Coste Salarial por Grupo Cotizacion
+					break;
+				case 2:
+					//Coste Salarial desde Nombre
+					break;
+				case 3:
+					menu();
+					break;
+				default:
+					System.out.println("Se ha cerrado el programa");
+			}
+			limpiarPantalla();
+
+		} while (eleccion != 0);
+	}
+
+	public static void menuIncorporar() {
+
+		do {
+			eleccion = leerEntero("1.Nuevos Empleados | 2.Nuevos Departamentos | 3.Volver al Inicio | 0.Salir");
+
+			switch (eleccion) {
+				case 1:
+					incorporarTrabajador();
+					break;
+				case 2:
+					incorporarDepartamento();
+					break;
+				case 3:
+					menu();
 					break;
 				default:
 					System.out.println("Opcion inválida");
 					continue;
 			}
+			limpiarPantalla();
 
 		} while (eleccion != 0);
 
 	}
 
-
-	/**
-	 * @author Pere Prior
-	 */
-	public static void menuIncorporar(){
+	public static void menuModificar() {
 
 		do {
-			eleccion = leerEntero("<1.- Empleados> <2.- Departamentos> <3.- Datos empresa> <4.- Volver al Inicio> <4.- Salir>");
+			eleccion = leerEntero("1.Modificar Datos Personales Empleado | 2.Eliminar Datos Departamentos | 3.Eliminar Datos Personales | 4.Volver al Inicio | 0.Salir");
 
 			switch (eleccion) {
 				case 1:
-
+					//Modificar Datos Personales Empleado
+					modificarDatosPersonales();
 					break;
 				case 2:
-
+					eliminarDatosDepartamento();
 					break;
 				case 3:
-
+					eliminarDatosEmpleado();
 					break;
 				case 4:
-					Menu();
+					menu();
 					break;
 				default:
 					System.out.println("Opcion inválida");
 					continue;
 			}
+			limpiarPantalla();
 
 		} while (eleccion != 0);
 
 	}
-
-	/**
-	 * @author Pere Prior
-	 */
-	public static void menuModificar(){
-
-		do {
-			eleccion = leerEntero("<1.- Empleados> <2.- Eliminar Empleados> <3.- Eliminar Departamentos> <4.- Volver al Inicio> <4.- Salir>");
-
-			switch (eleccion) {
-				case 1:
-
-					break;
-				case 2:
-
-					break;
-				case 3:
-
-					break;
-				case 4:
-					Menu();
-					break;
-				default:
-					System.out.println("Opcion inválida");
-					continue;
-			}
-
-		} while (eleccion != 0);
-
-	}
-
 }
