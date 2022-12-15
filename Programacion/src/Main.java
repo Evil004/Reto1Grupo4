@@ -11,7 +11,7 @@ public class Main {
 	public static ArrayList<Empleado> empleados = new ArrayList<>();
 	public static ArrayList<Departamento> departamentos = new ArrayList<>();
 
-	public static String camposCSVEmpleados = new String();
+	public static String camposCSVEmpleados;
 	public static int eleccion;
 
 
@@ -38,7 +38,6 @@ public class Main {
 				break;
 			} catch (InputMismatchException e) {
 				System.out.println("No es un numero valido");
-				continue;
 			}
 
 		}
@@ -46,13 +45,7 @@ public class Main {
 
 	}
 
-	public static ArrayList<String> stringArrayToArrayList(String[] array) {
-		ArrayList<String> arrayList = new ArrayList<>();
-		for (String string: array) {
-			arrayList.add(string);
-		}
-		return arrayList;
-	}
+
 
 	/**
 	 * @author Óscar Fernandez
@@ -65,7 +58,7 @@ public class Main {
 				System.out.println(mensaje);
 				return inputValue.nextLine();
 			} catch (InputMismatchException e) {
-				continue;
+				System.out.println("Error al leer la cadena");
 			}
 
 		}
@@ -82,13 +75,12 @@ public class Main {
 	/**
 	 * @author Jonathan Taban
 	 */
-	public static int limpiarPantalla(){
+	public static void limpiarPantalla() {
 		leerCadena("\nApreta Entrer para continuar:");
 
-		for(int x=0; x<50; x++){
+		for (int x = 0; x < 50; x++) {
 			System.out.println(" ");
 		}
-		return 0;
 	}
 
 	//------------- Abrir Archivos -------------
@@ -155,7 +147,6 @@ public class Main {
 
 		}
 		camposCSVEmpleados += datosEmpleados.get(0).get(datosEmpleados.get(0).size() - 1);
-
 
 
 		for (int i = 1; i < datosEmpleados.size(); i++) {
@@ -248,11 +239,11 @@ public class Main {
 		System.out.println("Categoria Grupo Profesional: " + empleado.catGrupProfesional);
 		System.out.println("Grupo cotizacion: " + empleado.grupCotizacion);
 
-		for (int i = 0; i < departamentos.size(); i++) {
+		for (Departamento departamento: departamentos) {
 
-			if (departamentos.get(i).id == empleado.departamento) {
+			if (departamento.id == empleado.departamento) {
 
-				System.out.println("Departamento: " + departamentos.get(i).nombre);
+				System.out.println("Departamento: " + departamento.nombre);
 
 			}
 		}
@@ -264,23 +255,11 @@ public class Main {
 	 * @author Óscar Fernandez
 	 */
 	public static void cantEmpleadosPorDepart() {
-		// Creamos un array que inicializamos en 0 donde guardaremos la cantidad de empleados por departamento
-		Integer[] numEmpleados = new Integer[departamentos.size()];
-		for (int i = 0; i < numEmpleados.length; i++) {
-			numEmpleados[i] = 0;
+
+		for (Departamento departamento : departamentos ) {
+			System.out.println("Hay " + contarEmpleadoEnDep(departamento.id) + " empleados en el departamento " + departamento.nombre);
 		}
 
-		//Contamos la cantidad de empleados por departamento
-		for (Empleado empleado: empleados) {
-			numEmpleados[empleado.departamento - 1] += 1;
-		}
-
-		//Imprimimos la cantidad de empleado por departamento
-		for (int i = 0; i < numEmpleados.length; i++) {
-			Departamento departamento = departamentos.get(i);
-
-			System.out.println("El departamento " + departamento.nombre + " tiene " + numEmpleados[i] + " empleados.");
-		}
 	}
 
 	/**
@@ -304,8 +283,9 @@ public class Main {
 				return empleado;
 			}
 		}
-	return null;
+		return null;
 	}
+
 	/**
 	 * @author Jose Vicente Ebri
 	 */
@@ -314,7 +294,9 @@ public class Main {
 		int id = leerEntero("Introduce el ID del departamento");
 		for (Empleado empleado: empleados) {
 			if (empleado.departamento == id) {
-				System.out.println("ID: " + empleado.id + "\t" + "Empleado: " + empleado.nombre + String.format("\t\t%-10s", "") + "Departamento: " + departamentos.get(id).nombre);
+				String name = empleado.nombre;
+				//name = length(name);
+				//System.out.println("ID: " + empleado.id + "\t" + "Empleado: " + empleado.nombre + String.format(name-"\t%-10s", "") + "Departamento: " + departamentos.get(id).nombre);
 			}
 		}
 	}
@@ -372,8 +354,8 @@ public class Main {
 		Empleado empleadoAModificar = crearEmpleado();
 
 		empleadoAModificar.id = id;
-		empleados.set(empleados.indexOf(buscarEmpleadoID(id)),empleadoAModificar);
-		for (Empleado empleado : empleados){
+		empleados.set(empleados.indexOf(buscarEmpleadoID(id)), empleadoAModificar);
+		for (Empleado empleado: empleados) {
 			imprimirDatosEmpleado(empleado);
 		}
 
@@ -384,77 +366,93 @@ public class Main {
 
 
 	/**
-	 * @author Pere Prior
+	 * @author Oscar, Jose Vicente
 	 */
 	public static void eliminarDatosDepartamento() {
 		int id = leerEntero("Introduce el ID del Departamento a eliminar: ");
 
+		Departamento departamento = null;
 
-		for (Departamento departamento : departamentos) {
+		for (int i = 0; i < departamentos.size(); i++) {
+			departamento = departamentos.get(i);
+			if (departamento.id == id) {
+				break;
+			}
+		}
+		if(departamento == null){
+			System.out.println("No se ha encontrado el departamento con el id " + id);
+			return;
+		}
 
-				if(departamento.id == id){
+		int numEmpleados = contarEmpleadoEnDep(id);
 
-					int numEmpleados = 0;
-					for (Empleado empleado : empleados) {
+		if (numEmpleados <= 0) {
+			return;
+		}
 
-					    if(empleado.departamento == id){
-							numEmpleados ++;
-						}
-					}
-					if (numEmpleados >0){
-						System.out.println("Vas a aeliminar el departamento " + departamento.nombre + " que tiene " + numEmpleados + " empleados");
+		System.out.println("Vas a eliminar el departamento " + departamento.nombre + " que tiene " + numEmpleados + " empleados");
 
-						boolean flag =true;
-						while (flag){
-							String decision = leerCadena("Quieres continuar? Si continuas se eliminaran todos los empleados en cascada");
+		boolean flag = true;
+		while (flag) {
+			String decision = leerCadena("Quieres continuar? (si/no) Si continuas se eliminaran todos los empleados en cascada");
 
-							switch (decision){
-								case "si":
-									flag =false;
+			switch (decision) {
+				case "si":
+					flag = false;
 
-									for (Empleado empleado : empleados) {
-									    if (empleado.departamento == id){
-											empleados.remove(empleados.indexOf(empleado));
-										}
-									}
-									break;
-								case "no":
-									flag =false;
+					while(contarEmpleadoEnDep(id)>0){
+						for (int j = 0; j < empleados.size(); j++) {
+							Empleado empleado = empleados.get(j);
 
-									break;
-								default:
-									System.out.println("Introduce una respuesta valida");
+							if (empleado.departamento == id) {
+								empleados.remove(empleados.indexOf(empleado));
 							}
+
 						}
-
-
 					}
-				}
+
+					departamentos.remove(departamento);
+
+					break;
+				case "no":
+					flag = false;
+
+					break;
+				default:
+					System.out.println("Introduce una respuesta valida");
+			}
 
 		}
+	}
+
+	private static int contarEmpleadoEnDep(int idDep) {
+		int numEmpleados = 0;
+		for (Empleado empleado: empleados) {
+
+			if (empleado.departamento == idDep) {
+				numEmpleados++;
+			}
+		}
+		return numEmpleados;
 	}
 
 	/**
 	 * @author Pere Prior
 	 */
-	public static void eliminarDatosEmpleado () {
+	public static void eliminarDatosEmpleado() {
 		int id = leerEntero("Introduce el ID del empleado");
 
-		for (Empleado empleado : empleados) {
-			
+		for (Empleado empleado: empleados) {
 
-		}
-
-		if (id > empleados.lastIndexOf(empleados)) {
-				System.out.println("ID incorrecto");
-		} else {
+			if (id == empleado.id) {
 				empleados.remove(empleados.indexOf(buscarEmpleadoID(id)));
-		}
+				System.out.println("Se ha borrado el empleado indicado");
+			}
 
+		}
 	}
 
 
-	
 	//------------- Guardar en CSVs -------------
 
 	/**
@@ -462,13 +460,13 @@ public class Main {
 	 */
 	public static void escribirCSVs() {
 		if (empleados != null) {
-			System.out.println("Escribieno CSV de Empleado.csv...");
+			System.out.println("Escribiendo CSV de Empleado.csv...");
 			escribirEmpleadosCSV();
 			System.out.println("Done");
 
 		}
 		if (departamentos != null) {
-			System.out.println("Escribieno CSV de Departamento.csv...");
+			System.out.println("Escribiendo CSV de Departamento.csv...");
 
 			escribirDepartamentoCSV();
 			System.out.println("Done");
@@ -481,6 +479,7 @@ public class Main {
 	 */
 	public static void escribirDepartamentoCSV() {
 
+		//TODO: Quitar el archivo hardcodeado.
 		File ficheroSalida = new File("./Programacion/CSVs/Departamento.csv");
 
 		try {
@@ -489,7 +488,7 @@ public class Main {
 			flujoSalida.write("id;Nombre");
 			flujoSalida.newLine();
 
-			for (Departamento departamento : departamentos) {
+			for (Departamento departamento: departamentos) {
 				flujoSalida.write(departamento.id + ";" + departamento.nombre);
 				flujoSalida.newLine();
 			}
@@ -505,7 +504,7 @@ public class Main {
 	 * @author Óscar Fernandez
 	 */
 	public static void escribirEmpleadosCSV() {
-
+		//TODO: Quitar el archivo hardcodeado.
 		File ficheroSalida = new File("./Programacion/CSVs/Empleado.csv");
 
 		try {
@@ -514,13 +513,13 @@ public class Main {
 			flujoSalida.write("NIF;Nombre;Apellido1;Apellido2;Cuenta;Antiguedad;NSS;Grupo_profesional;Grupo_Cotizacion;Email;Departamento;id");
 			flujoSalida.newLine();
 
-			for (Empleado empleado : empleados) {
-			    flujoSalida.write(empleado.dni + ";" + empleado.nombre + ";" + empleado.apellido1 + ";" + empleado.apellido2 + ";" + empleado.cuenta + ";" + empleado.antiguedad + ";" +""+";" + empleado.catGrupProfesional + ";" + empleado.grupCotizacion + ";" + empleado.email + ";" + empleado.departamento + ";" + empleado.id);
+			for (Empleado empleado: empleados) {
+				flujoSalida.write(empleado.dni + ";" + empleado.nombre + ";" + empleado.apellido1 + ";" + empleado.apellido2 + ";" + empleado.cuenta + ";" + empleado.antiguedad + ";" + "" + ";" + empleado.catGrupProfesional + ";" + empleado.grupCotizacion + ";" + empleado.email + ";" + empleado.departamento + ";" + empleado.id);
 				flujoSalida.newLine();
 			}
 			flujoSalida.close();
 
-			
+
 		} catch (IOException e) {
 			System.out.println("Error al escribir");
 		}
@@ -590,7 +589,7 @@ public class Main {
 	public static void MenuRelacionadoaEmpleado() {
 
 		do {
-			eleccion = leerEntero("1.Mostrar todos los Empleado | 2.Empleado por DNI | 3.Empleado desde Dep. | 4.Numero empleador por Dep. | 5.Datos empleado desde categoria | 6.Volver al Inicio | 0.Salir");
+			eleccion = leerEntero("1.Mostrar todos los Empleado | 2.Empleado por DNI | 3.Empleado desde Dep. | 4.Numero de empleados por Dep. | 5.Datos empleado desde categoria | 6.Volver al Inicio | 0.Salir");
 
 			switch (eleccion) {
 				case 1:
