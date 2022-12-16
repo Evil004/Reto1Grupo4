@@ -6,7 +6,7 @@ package Programacion.src;
  */
 public class Departamento {
 
-	static int id;
+	int id;
 	String nombre;
 
 	public Departamento(int id, String nombre) {

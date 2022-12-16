@@ -10,13 +10,17 @@ import java.util.Scanner;
  */
 public class Main {
 	public static Scanner inputValue;
+
 	public static File carpeta = new File("./Programacion/CSVs");
 	public static final String empleadosCSV = "Empleado.csv";
+	public static final String grupoCotizacionCSV = "Grupo_Cotizacion.csv";
+	public static final String horasExtraCSV = "Horas_Extra.csv";
 	public static final String departamentosCSV = "Departamento.csv";
 
 	public static ArrayList<Empleado> empleados = new ArrayList<>();
 	public static ArrayList<Departamento> departamentos = new ArrayList<>();
-
+	public static ArrayList<GrupoCotizacion> gruposCotizacion = new ArrayList<>();
+	public static ArrayList<HorasExtra> horasExtra = new ArrayList<>();
 	public static String camposCSVEmpleados;
 	public static int eleccion;
 	public static String lineaInf = generarLinea("¯");
@@ -53,10 +57,15 @@ public class Main {
 
 	}
 
+	public static String pedirFecha() {
+		leerCadena("");
+		return "a";
+	}
+
 	/**
 	 * autor/es: Óscar Fernandez
 	 */
-	public static String generarLinea(String caracter){
+	public static String generarLinea(String caracter) {
 		String linea = "";
 		for (int i = 0; i < 166; i++) {
 			linea += caracter;
@@ -102,14 +111,22 @@ public class Main {
 	/**
 	 * autor/es: Óscar Fernandez
 	 */
+	public static void esperarEnterYLimpuar() {
+		esperarEnter();
+		limpiarPantalla();
+	}
+
+	/**
+	 * autor/es: Óscar Fernandez
+	 */
 	//Una funcion que busca un archivo con un nombre dado
-	public static File buscarArchivo(String nombreArchivo){
-		for (File archivo : carpeta.listFiles()) {
-			if (archivo.getName() ==nombreArchivo){
+	public static File buscarArchivo(String nombreArchivo) {
+		for (File archivo: carpeta.listFiles()) {
+			if (archivo.getName() == nombreArchivo) {
 				return archivo;
 			}
 		}
-		return new File(carpeta.getPath()+"/"+nombreArchivo);
+		return new File(carpeta.getPath() + "/" + nombreArchivo);
 	}
 
 	//------------- Abrir Archivos -------------
@@ -136,6 +153,17 @@ public class Main {
 				case departamentosCSV:
 
 					cargarDepartamentos(archivo);
+					break;
+
+
+				case grupoCotizacionCSV:
+
+					cargarGrupoCotizacion(archivo);
+					break;
+				case horasExtraCSV:
+
+					cargarHorasExtra(archivo);
+					break;
 
 			}
 		}
@@ -146,7 +174,39 @@ public class Main {
 	/**
 	 * autor/es: Óscar Fernandez
 	 */
-	//Cargamos los empleados a memoria
+	private static <Srting> void cargarGrupoCotizacion(File archivo) {
+		ArrayList<ArrayList<String>> datosGruposCot = leerCsv(archivo.getPath());
+
+		for (int i = 1; i < datosGruposCot.size(); i++) {
+			ArrayList<String> datosGrupoCot = datosGruposCot.get(i);
+
+			int id = Integer.parseInt(datosGrupoCot.get(obtenerIndice(datosGruposCot, "Grupo_Cotizacion")));
+			float sueldoBase = Float.parseFloat(datosGrupoCot.get(obtenerIndice(datosGruposCot, "Sueldo_Base")).replace(",", "."));
+
+			gruposCotizacion.add(new GrupoCotizacion(id, sueldoBase));
+		}
+	}
+
+	/**
+	 * @author Jose Vicente
+	 */
+	private static void cargarHorasExtra(File archivo) {
+		ArrayList<ArrayList<String>> datosHorasExtras = leerCsv(archivo.getPath());
+
+		for (int i = 1; i < datosHorasExtras.size(); i++) {
+			ArrayList<String> datosHorasExtra = datosHorasExtras.get(i);
+			String nif = datosHorasExtra.get(obtenerIndice(datosHorasExtras, "NIF"));
+			String fecha = datosHorasExtra.get(obtenerIndice(datosHorasExtras, "Fecha"));
+			int hora_i = Integer.parseInt(datosHorasExtra.get(obtenerIndice(datosHorasExtras, "hora_inicio")));
+			int hora_f = Integer.parseInt(datosHorasExtra.get(obtenerIndice(datosHorasExtras, "hora_fin")));
+			int sitio = Integer.parseInt(datosHorasExtra.get(obtenerIndice(datosHorasExtras, "Sitio")));
+			horasExtra.add(new HorasExtra(nif, fecha, hora_i, hora_f, sitio));
+		}
+	}
+
+	/**
+	 * autor/es: Óscar Fernandez
+	 */
 	private static void cargarDepartamentos(File archivo) {
 		ArrayList<ArrayList<String>> datosDepartamentos = leerCsv(archivo.getPath());
 
@@ -193,8 +253,8 @@ public class Main {
 			try {
 				nss = Integer.parseInt(datosEmpleado.get(obtenerIndice(datosEmpleados, "NSS")));
 
-			}catch (NumberFormatException e){
-				 nss = 0;
+			} catch (NumberFormatException e) {
+				nss = 0;
 			}
 			String antiguedad = datosEmpleado.get(obtenerIndice(datosEmpleados, "Antiguedad"));
 			String grupoProfesional = datosEmpleado.get(obtenerIndice(datosEmpleados, "Grupo_profesional"));
@@ -203,7 +263,7 @@ public class Main {
 			int departamento = Integer.parseInt(datosEmpleado.get(obtenerIndice(datosEmpleados, "Departamento")));
 
 
-			Empleado empleado = new Empleado(id, dni, nombre, apellido1, apellido2, cuenta,nss, antiguedad, grupoProfesional, grupoCotizacion, email, departamento);
+			Empleado empleado = new Empleado(id, dni, nombre, apellido1, apellido2, cuenta, nss, antiguedad, grupoProfesional, grupoCotizacion, email, departamento);
 			empleados.add(empleado);
 		}
 	}
@@ -247,12 +307,125 @@ public class Main {
 
 	}
 
+
 	//------------- Consultas -------------
+
+	/**
+	 * autor/es: Jose Vicente Ebri
+	 */
+	public static void consultarHorasExtraDNI() {
+		while (true){
+		String dni = leerCadena("Introduce el DNI del empleado: ");
+		for (HorasExtra hora: horasExtra) {
+			if (hora.nif.equals(dni)) {
+				int horas = (hora.hora_f - hora.hora_i);
+				System.out.println("Pepe ha realizado " + horas + " horas extra");
+				return;
+			}
+			System.out.println("No existe un DNI correspondiente al introducido");
+			}
+		}
+	}
+
+	/**
+	 * autor/es: Óscar Fernandez
+	 */
+	public static void consultarHorasExtraID() {
+		String dniEmpleado = null;
+
+		while (true){
+			int idEmpleado = leerEntero("Introduce el ID del empleado: ");
+
+			for (Empleado empleado : empleados) {
+			    if (empleado.id ==idEmpleado){
+					dniEmpleado = empleado.dni;
+				}
+			}
+			if (dniEmpleado != null){
+				break;
+			}else {
+				System.out.println("No se ha encontrado un empleado con ese ID.");
+
+			}
+		}
+
+
+		for (HorasExtra hora: horasExtra) {
+				if (hora.nif.equals(dniEmpleado)) {
+					int horas = (hora.hora_f - hora.hora_i);
+					System.out.println("Pepe ha realizado " + horas + " horas extra");
+					return;
+				}
+				System.out.println("No existe un DNI correspondiente al introducido");
+			}
+	}
+
+	/**
+	 * autor/es: Óscar Fernandez
+	 */
+	private static int contarEmpleadoEnDep(int idDep) {
+		int numEmpleados = 0;
+		for (Empleado empleado: empleados) {
+
+			if (empleado.departamento == idDep) {
+				numEmpleados++;
+			}
+		}
+		return numEmpleados;
+	}
+
+	/**
+	 * autor/es: Óscar Fernandez
+	 */
+	public static void consultarCosteSalarialGrupoCot() {
+		int categoria = leerEntero("Introduce el numero de categoria a buscar: ");
+
+		for (GrupoCotizacion grupoCotizacion: gruposCotizacion) {
+			int empleadosPorGrupo = 0;
+			for (Empleado empleado: empleados) {
+				if (empleado.grupCotizacion == grupoCotizacion.id) {
+					empleadosPorGrupo++;
+				}
+			}
+
+			System.out.println("El grupo de cotizacion " + grupoCotizacion.id + " tiene un coste salarial de " + grupoCotizacion.sueldoBase * empleadosPorGrupo + "€");
+		}
+		for (Empleado empleado: empleados) {
+
+		}
+
+	}
+
+	/**
+	 * autor/es: Óscar Fernandez
+	 */
+	public static void consultarCosteSalarialDepartamento() {
+		int idDepartamento = leerEntero("Introduce el ID del departamento");
+
+		for (Departamento departamento: departamentos) {
+			int costeDepartamento = 0;
+			if (departamento.id == idDepartamento){
+
+				for (Empleado empleado : empleados) {
+					if(empleado.departamento == idDepartamento){
+						for (GrupoCotizacion grupoCotizacion : gruposCotizacion) {
+						    if(empleado.grupCotizacion == grupoCotizacion.id){
+								costeDepartamento += grupoCotizacion.sueldoBase;
+							}
+						}
+					}
+				}
+				System.out.println("El departamento " + departamento.nombre + " tiene un coste salarial de: " + costeDepartamento + "€");
+
+			}
+		}
+	}
 
 	/**
 	 * autor/es: Jose Vicente
 	 */
 	public static void buscarEmpleadoCategoria() {
+		System.out.println("A1 - A2 - A3 - B1 - B2 -B3");
 		String categoria = leerCadena("Introduce la categoria de la que obtener los empleados: ");
 		for (Empleado empleado: empleados) {
 			if (empleado.catGrupProfesional.equals(categoria)) {
@@ -276,6 +449,7 @@ public class Main {
 		System.out.println("Categoria Grupo Profesional: " + empleado.catGrupProfesional);
 		System.out.println("Grupo cotizacion: " + empleado.grupCotizacion);
 
+		//TODO: Imprime varios departamentos en algunos empleados
 		for (Departamento departamento: departamentos) {
 
 			if (departamento.id == empleado.departamento) {
@@ -293,12 +467,12 @@ public class Main {
 	 */
 	public static void cantEmpleadosPorDepart() {
 
-		if (departamentos.size() > 0){
+		if (departamentos.size() > 0) {
 			for (Departamento departamento: departamentos) {
 				System.out.println("Hay " + contarEmpleadoEnDep(departamento.id) + " empleados en el departamento " + departamento.nombre);
 			}
 
-		}else {
+		} else {
 			System.out.println("No se han encontrado departamentos");
 		}
 
@@ -324,12 +498,26 @@ public class Main {
 	/**
 	 * autor/es: Jose Vicente
 	 */
-	public static Empleado buscarEmpleadoID(int id) {
+	public static Empleado buscarEmpleadoID() {
+		while (true) {
+			int idEmpleado = leerEntero("Introduce el ID del empleado a buscar");
+			for (Empleado empleado: empleados) {
+				if (empleado.id == idEmpleado) {
+					return empleado;
+				}
+			}
+			System.out.println("No se ha encontrado un empleado con ese ID.");
+		}
+
+	}
+
+	public static Empleado buscarEmpleadoID(int idEmpleado) {
 		for (Empleado empleado: empleados) {
-			if (empleado.id == id) {
+			if (empleado.id == idEmpleado) {
 				return empleado;
 			}
 		}
+		System.out.println("No se ha encontrado un empleado con ese ID.");
 		return null;
 	}
 
@@ -339,13 +527,18 @@ public class Main {
 
 
 	public static void buscarEmpleadoPorDepartamento() {
-		while (true){
+		while (true) {
 
 			int idDepartamento = leerEntero("Introduce el ID del departamento:");
 			for (Empleado empleado: empleados) {
 				if (empleado.departamento == idDepartamento) {
-					System.out.printf("ID: %-12s Empleado: %-12s Departamento: %-12s \n", empleado.id,empleado.nombre, departamentos.get(idDepartamento).nombre);
-					return;
+					for (Departamento departamento: departamentos) {
+						if (departamento.id == idDepartamento) {
+							System.out.printf("ID: %-12s Empleado: %-12s Departamento: %-12s \n", empleado.id, empleado.nombre, departamentos.get(departamentos.indexOf(departamento)).nombre);
+							return;
+						}
+					}
+
 				}
 			}
 			System.out.println("No se ha encontrado un departamento con ese id");
@@ -363,6 +556,7 @@ public class Main {
 		empleados.add(empleado);
 	}
 
+	//TODO: Puedes añadir departamentos, grupos y categorias que no existen
 	private static Empleado crearEmpleado() {
 		int id = empleados.get(empleados.size() - 1).id + 1;
 		String dni = leerCadena("Introduce el DNI del empleado: ");
@@ -371,14 +565,14 @@ public class Main {
 		String apellido2 = leerCadena("Introduce el segundo apellido del empleado: ");
 		String cuenta = leerCadena("Introduce la cuenta del empleado: ");
 		int nss = leerEntero("Introduce el numero de la seguridad social del empleado: ");
-		int antiguedad = leerEntero("Introduce la antiguedad del empleado: ");
+		String antiguedad = leerCadena("Introduce la antiguedad del empleado: ");
 		String catGrupProfesional = leerCadena("Introduce la categoria del grupo profesional del empleado: ");
-		String grupCotizacion = leerCadena("Introduce el grupo de cotizacion del empleado: ");
+		int grupCotizacion = leerEntero("Introduce el grupo de cotizacion del empleado: ");
 		int departamento = leerEntero("Introduce el departamento del empleado: ");
 		String email = leerCadena("Introduce el email del empleado: ");
 
 
-		Empleado empleado = new Empleado(id, dni, nombre, apellido1, apellido2, cuenta, nss, catGrupProfesional, grupCotizacion, departamento, email, antiguedad);
+		Empleado empleado = new Empleado(id, dni, nombre, apellido1, apellido2, cuenta, nss, antiguedad, catGrupProfesional, grupCotizacion, email, departamento);
 		return empleado;
 	}
 
@@ -398,20 +592,35 @@ public class Main {
 
 
 	/**
-	 * autor/es: Jose Vicente Ebri
+	 * autor/es: Jose Vicente Ebri, Pere Prior
 	 */
 	public static void modificarDatosPersonales() {
-		int id = leerEntero("Introduce el ID del empleado a modificar:");
 
-		System.out.println("\nIntroduce los datos modificados: \n");
-		Empleado empleadoAModificar = crearEmpleado();
+		while (true) {
 
-		empleadoAModificar.id = id;
-		empleados.set(empleados.indexOf(buscarEmpleadoID(id)), empleadoAModificar);
-		for (Empleado empleado: empleados) {
-			imprimirDatosEmpleado(empleado);
+			int id = leerEntero("Introduce el ID del empleado a modificar:");
+
+			if (id <= empleados.size()) {
+
+				imprimirDatosEmpleado(buscarEmpleadoID(id));
+				System.out.println("...................");
+
+				System.out.println("\nIntroduce los datos modificados: \n");
+				Empleado empleadoAModificar = crearEmpleado();
+
+				empleadoAModificar.id = id;
+				empleados.set(empleados.indexOf(buscarEmpleadoID(id)), empleadoAModificar);
+				for (Empleado empleado: empleados) {
+					imprimirDatosEmpleado(empleado);
+				}
+				return;
+
+			} else {
+
+				System.out.println("Opcion no valida.");
+
+			}
 		}
-
 
 	}
 
@@ -439,55 +648,59 @@ public class Main {
 
 		int numEmpleados = contarEmpleadoEnDep(id);
 
-		if (numEmpleados <= 0) {
-			return;
-		}
-
-		System.out.println("Vas a eliminar el departamento " + departamento.nombre + " que tiene " + numEmpleados + " empleados");
-
-		boolean flag = true;
-		while (flag) {
-			String decision = leerCadena("Quieres continuar? (si/no) Si continuas se eliminaran todos los empleados en cascada");
-
+		while (true) {
+			String decision = leerCadena("Se va a eleminar el departamento " + departamento.nombre + ", estas seguro? (si, no)");
 			switch (decision) {
 				case "si":
-					flag = false;
-
-					while (contarEmpleadoEnDep(id) > 0) {
-						for (int j = 0; j < empleados.size(); j++) {
-							Empleado empleado = empleados.get(j);
-
-							if (empleado.departamento == id) {
-								empleados.remove(empleados.indexOf(empleado));
-							}
-
-						}
+					if (numEmpleados <= 0) {
+						departamentos.remove(departamento);
+						return;
 					}
 
-					departamentos.remove(departamento);
+					System.out.println("Vas a eliminar el departamento " + departamento.nombre + " que tiene " + numEmpleados + " empleados");
 
-					break;
+					while (true) {
+						decision = leerCadena("Quieres continuar? (si/no) Si continuas se eliminaran todos los empleados en cascada");
+
+						switch (decision) {
+							case "si":
+
+								while (contarEmpleadoEnDep(id) > 0) {
+									for (int j = 0; j < empleados.size(); j++) {
+										Empleado empleado = empleados.get(j);
+
+										if (empleado.departamento == id) {
+											empleados.remove(empleados.indexOf(empleado));
+										}
+
+									}
+								}
+
+								departamentos.remove(departamento);
+
+								return;
+							case "no":
+								System.out.println("Eliminacion cancelada");
+								return;
+							default:
+								System.out.println("Introduce una respuesta valida");
+						}
+
+					}
+
 				case "no":
-					flag = false;
-
-					break;
+					System.out.println("Eliminacion cancelada");
+					return;
 				default:
-					System.out.println("Introduce una respuesta valida");
-			}
-
-		}
-	}
-
-	private static int contarEmpleadoEnDep(int idDep) {
-		int numEmpleados = 0;
-		for (Empleado empleado: empleados) {
-
-			if (empleado.departamento == idDep) {
-				numEmpleados++;
+					System.out.println("Opcion no valida, introduzca una opcion valida.");
+					esperarEnter();
+					limpiarPantalla();
 			}
 		}
-		return numEmpleados;
+
+
 	}
+
 
 	/**
 	 * autor/es: Pere Prior
@@ -495,14 +708,46 @@ public class Main {
 	public static void eliminarDatosEmpleado() {
 		int id = leerEntero("Introduce el ID del empleado");
 
-		for (Empleado empleado: empleados) {
+		Empleado empleado = null;
 
-			if (id == empleado.id) {
-				empleados.remove(empleados.indexOf(buscarEmpleadoID(id)));
-				System.out.println("Se ha borrado el empleado indicado");
+		for (int i = 0; i < empleados.size(); i++) {
+
+			empleado = empleados.get(i);
+
+			if (empleado.id == id) {
+				break;
 			}
 
 		}
+
+		if (empleado == null) {
+
+			System.out.println("No se ha encontrado ningun empleado con el id " + id);
+			return;
+
+		}
+
+		System.out.println("Va a eliminar el empleado" + empleado.nombre);
+
+		while (true) {
+
+			String decision = leerCadena("Quieres continuar? (si/no)");
+
+			switch (decision) {
+
+				case "si":
+					empleados.remove(empleado);
+					return;
+
+				case "no":
+					System.out.println("Eliminacion cancelada");
+					return;
+
+				default:
+					System.out.println("Introduce una respuesta valida");
+			}
+		}
+
 	}
 
 
@@ -583,7 +828,6 @@ public class Main {
 	//------------- Menus -------------
 
 
-
 	/**
 	 * autor/es: Jonathan
 	 */
@@ -593,7 +837,7 @@ public class Main {
 			limpiarPantalla();
 
 			System.out.println();
-			eleccion = leerEntero(String.format( lineaSup+"\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n"+ lineaInf,"1.Consultar " ,  "2.Incorporar", "3.Modificar/Eliminar", "4. Exportar a CSV", "0.Salir"));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Consultar ", "2.Incorporar", "3.Modificar/Eliminar", "4. Exportar a CSV", "0.Salir"));
 
 			switch (eleccion) {
 				case 1:
@@ -632,7 +876,7 @@ public class Main {
 		do {
 			limpiarPantalla();
 
-			eleccion = leerEntero(String.format( lineaSup+"\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n"+ lineaInf,"1.Empleados y departamentos","2.Horas Extra","3.Coste Salarial","4.Volver al Inicio","0.Salir"));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Empleados y departamentos", "2.Horas Extra", "3.Coste Salarial", "4.Volver al Inicio", "0.Salir"));
 
 			switch (eleccion) {
 				case 1:
@@ -666,7 +910,7 @@ public class Main {
 		do {
 			limpiarPantalla();
 
-			eleccion = leerEntero(String.format( lineaSup+"\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n"+ lineaInf,"1.Todos los Empleado", "2.Empleado por DNI", "3.Empleados en un departamento", "4.Numero de empleados por Dep.", "5.empleados por categorias", "6.Volver al Inicio", "0.Salir","","",""));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Todos los Empleado", "2.Empleado por DNI", "3.Empleados en un departamento", "4.Numero de empleados por Dep.", "5.empleados por categorias", "6.Empleado por ID", "7.Volver al Inicio", "0.Salir", "", "", ""));
 
 			switch (eleccion) {
 				case 1:
@@ -694,6 +938,10 @@ public class Main {
 					esperarEnter();
 					break;
 				case 6:
+					buscarEmpleadoID();
+					esperarEnter();
+					break;
+				case 7:
 					menu();
 					break;
 				case 0:
@@ -714,14 +962,16 @@ public class Main {
 		do {
 			limpiarPantalla();
 
-			eleccion = leerEntero(String.format( lineaSup+"\n| %-30s | %-30s | %-30s | %-30s | %-30s | %-30s |\n"+ lineaInf,"1.Horas Extra por ID", "2.Horas Extra por DNI", "3.Volver al Inicio", "0.Salir", "", ""));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Horas Extra por ID", "2.Horas Extra por DNI", "3.Volver al Inicio", "0.Salir", "", ""));
 
 			switch (eleccion) {
 				case 1:
-					//Horas Extra por ID
+					consultarHorasExtraID();
+					esperarEnter();
 					break;
 				case 2:
-					//Horas Extra por DNI
+					consultarHorasExtraDNI();
+					esperarEnter();
 					break;
 				case 3:
 					menu();
@@ -744,14 +994,17 @@ public class Main {
 
 		do {
 			limpiarPantalla();
-			eleccion = leerEntero(String.format( lineaSup+"\n| %-30s | %-30s | %-30s | %-30s | %-30s | %-30s |\n"+ lineaInf,"1.Coste Salarial por Grupo Cotizacion", "2.Coste Salarial desde Nombre", "3.Volver al Inicio", "0.Salir", "", ""));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Coste por Grupo Cotizacion", "2.Coste Salarial Departamento", "3.Volver al Inicio", "0.Salir", "", ""));
 
 			switch (eleccion) {
 				case 1:
-					//Coste Salarial por Grupo Cotizacion
+					consultarCosteSalarialGrupoCot();
+					esperarEnter();
 					break;
 				case 2:
-					//Coste Salarial desde Nombre
+					consultarCosteSalarialDepartamento();
+					esperarEnter();
+
 					break;
 				case 3:
 					menu();
@@ -774,7 +1027,7 @@ public class Main {
 
 		do {
 			limpiarPantalla();
-			eleccion = leerEntero(String.format( lineaSup+"\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n"+ lineaInf,"1.Nuevos Empleados", "2.Nuevos Departamentos", "3.Volver al Inicio", "0.Salir", ""));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Nuevos Empleados", "2.Nuevos Departamentos", "3.Volver al Inicio", "0.Salir", ""));
 
 			switch (eleccion) {
 				case 1:
@@ -807,11 +1060,10 @@ public class Main {
 
 		do {
 			limpiarPantalla();
-			eleccion = leerEntero(String.format( lineaSup+"\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n"+ lineaInf,"1.Modificar Datos Empleado", "2.Eliminar Datos Departamentos", "3.Eliminar Datos Personales", "4.Volver al Inicio", "0.Salir"));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Modificar Datos Empleado", "2.Eliminar Datos Departamentos", "3.Eliminar Datos Personales", "4.Volver al Inicio", "0.Salir"));
 
 			switch (eleccion) {
 				case 1:
-					//Modificar Datos Personales Empleado
 					modificarDatosPersonales();
 					esperarEnter();
 
