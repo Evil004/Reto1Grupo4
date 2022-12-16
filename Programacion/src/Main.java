@@ -525,22 +525,24 @@ public class Main {
 	/**
 	 * autor/es: Jose Vicente Ebri,  Jonathan Taban
 	 */
-
-
 	public static void buscarEmpleadoPorDepartamento() {
 		while (true) {
 
+			boolean flag = false;
 			int idDepartamento = leerEntero("Introduce el ID del departamento:");
 			for (Empleado empleado: empleados) {
 				if (empleado.departamento == idDepartamento) {
 					for (Departamento departamento: departamentos) {
 						if (departamento.id == idDepartamento) {
+							flag = true;
 							System.out.printf("ID: %-12s Empleado: %-12s Departamento: %-12s \n", empleado.id, empleado.nombre, departamentos.get(departamentos.indexOf(departamento)).nombre);
-							return;
 						}
 					}
 
 				}
+			}
+			if (flag){
+				return;
 			}
 			System.out.println("No se ha encontrado un departamento con ese id");
 		}
@@ -757,6 +759,7 @@ public class Main {
 	/**
 	 * autor/es: Óscar Fernandez
 	 */
+
 	public static void escribirCSVs() {
 		if (empleados != null) {
 			System.out.println("Escribiendo CSV de Empleado.csv...");
@@ -832,6 +835,7 @@ public class Main {
 	/**
 	 * autor/es: Jonathan
 	 */
+	//TODO: Si no se han guardado los datos 	que se avise al usuario antes de salir
 	public static void menu() {
 
 		do {
@@ -890,8 +894,8 @@ public class Main {
 					MenuCosteSalarial();
 					break;
 				case 4:
-					menu();
-					break;
+					return;
+
 				case 0:
 					break;
 				default:
@@ -943,8 +947,8 @@ public class Main {
 					esperarEnter();
 					break;
 				case 7:
-					menu();
-					break;
+					return;
+
 				case 0:
 					break;
 				default:
@@ -975,8 +979,8 @@ public class Main {
 					esperarEnter();
 					break;
 				case 3:
-					menu();
-					break;
+					return;
+
 				case 0:
 					break;
 				default:
@@ -1008,8 +1012,8 @@ public class Main {
 
 					break;
 				case 3:
-					menu();
-					break;
+					return;
+
 				case 0:
 					break;
 				default:
@@ -1041,8 +1045,8 @@ public class Main {
 
 					break;
 				case 3:
-					menu();
-					break;
+					return;
+
 				default:
 					System.out.println("Opcion inválida");
 					esperarEnter();
@@ -1080,8 +1084,7 @@ public class Main {
 
 					break;
 				case 4:
-					menu();
-					break;
+					return;
 				case 0:
 					break;
 				default:
