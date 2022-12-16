@@ -498,12 +498,13 @@ public class Main {
 	/**
 	 * autor/es: Jose Vicente
 	 */
-	public static Empleado buscarEmpleadoID() {
+	public static void buscarEmpleadoID() {
 		while (true) {
 			int idEmpleado = leerEntero("Introduce el ID del empleado a buscar");
 			for (Empleado empleado: empleados) {
 				if (empleado.id == idEmpleado) {
-					return empleado;
+					imprimirDatosEmpleado( empleado);
+					return;
 				}
 			}
 			System.out.println("No se ha encontrado un empleado con ese ID.");
