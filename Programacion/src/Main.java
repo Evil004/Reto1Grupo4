@@ -5,14 +5,22 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+/**
+ * @author Óscar Fernandez, Jonathan Taban, Jose Vicente Ebri, Pere Prior
+ */
 public class Main {
 	public static Scanner inputValue;
 	public static File carpeta = new File("./Programacion/CSVs");
+	public static final String empleadosCSV = "Empleado.csv";
+	public static final String departamentosCSV = "Departamento.csv";
+
 	public static ArrayList<Empleado> empleados = new ArrayList<>();
 	public static ArrayList<Departamento> departamentos = new ArrayList<>();
 
 	public static String camposCSVEmpleados;
 	public static int eleccion;
+	public static String lineaInf = generarLinea("¯");
+	public static String lineaSup = generarLinea("_");
 
 
 	public static void main(String[] args) {
@@ -22,10 +30,10 @@ public class Main {
 	}
 
 
-	//------------- Funciones Basicas -------------
+	//------------- Funciones Generales -------------
 
 	/**
-	 * @author Óscar Fernandez
+	 * autor/es: Óscar Fernandez
 	 */
 	// Leer un string del usuario
 	public static int leerEntero(String mensaje) throws InputMismatchException {
@@ -45,42 +53,63 @@ public class Main {
 
 	}
 
-
+	/**
+	 * autor/es: Óscar Fernandez
+	 */
+	public static String generarLinea(String caracter){
+		String linea = "";
+		for (int i = 0; i < 166; i++) {
+			linea += caracter;
+		}
+		return linea;
+	}
 
 	/**
-	 * @author Óscar Fernandez
+	 * autor/es: Óscar Fernandez
 	 */
 	//Leemos un string introducido por el usuario
 	public static String leerCadena(String mensaje) throws InputMismatchException {
-		while (true) {
-			try {
-				inputValue = new Scanner(System.in);
-				System.out.println(mensaje);
-				return inputValue.nextLine();
-			} catch (InputMismatchException e) {
-				System.out.println("Error al leer la cadena");
-			}
-
-		}
+		inputValue = new Scanner(System.in);
+		System.out.println(mensaje);
+		return inputValue.nextLine();
 
 	}
 
 	/**
-	 * @author Óscar Fernandez
+	 * autor/es: Óscar Fernandez
 	 */
 	public static int obtenerIndice(ArrayList<ArrayList<String>> datosCSV, String campoABuscar) {
 		return datosCSV.get(0).indexOf(campoABuscar);
 	}
 
 	/**
-	 * @author Jonathan Taban
+	 * autor/es: Jonathan Taban
 	 */
 	public static void limpiarPantalla() {
-		leerCadena("\nApreta Entrer para continuar:");
 
 		for (int x = 0; x < 50; x++) {
 			System.out.println(" ");
 		}
+	}
+
+	/**
+	 * autor/es: Óscar Fernandez,  Jonathan Taban
+	 */
+	public static void esperarEnter() {
+		leerCadena("\nApreta Entrer para continuar:");
+	}
+
+	/**
+	 * autor/es: Óscar Fernandez
+	 */
+	//Una funcion que busca un archivo con un nombre dado
+	public static File buscarArchivo(String nombreArchivo){
+		for (File archivo : carpeta.listFiles()) {
+			if (archivo.getName() ==nombreArchivo){
+				return archivo;
+			}
+		}
+		return new File(carpeta.getPath()+"/"+nombreArchivo);
 	}
 
 	//------------- Abrir Archivos -------------
@@ -88,7 +117,7 @@ public class Main {
 	//Leemos un string introducido por el usuario
 
 	/**
-	 * @author Óscar Fernandez
+	 * autor/es: Óscar Fernandez
 	 */
 	public static void leerCarpeta() {
 
@@ -97,14 +126,14 @@ public class Main {
 			switch (archivo.getName()) {
 
 
-				case "Empleado.csv":
+				case empleadosCSV:
 
 					cargarEmpleados(archivo);
 
 					break;
 
 				// Si hay un archivo de departamentos
-				case "Departamento.csv":
+				case departamentosCSV:
 
 					cargarDepartamentos(archivo);
 
@@ -115,7 +144,7 @@ public class Main {
 	}
 
 	/**
-	 * @author Óscar Fernandez
+	 * autor/es: Óscar Fernandez
 	 */
 	//Cargamos los empleados a memoria
 	private static void cargarDepartamentos(File archivo) {
@@ -132,7 +161,7 @@ public class Main {
 	}
 
 	/**
-	 * @author Óscar Fernandez
+	 * autor/es: Óscar Fernandez
 	 */
 	//Cargamos los empleados a memoria
 	private static void cargarEmpleados(File archivo) {
@@ -159,6 +188,14 @@ public class Main {
 			String apellido1 = datosEmpleado.get(obtenerIndice(datosEmpleados, "Apellido1"));
 			String apellido2 = datosEmpleado.get(obtenerIndice(datosEmpleados, "Apellido2"));
 			String cuenta = datosEmpleado.get(obtenerIndice(datosEmpleados, "Cuenta"));
+
+			int nss;
+			try {
+				nss = Integer.parseInt(datosEmpleado.get(obtenerIndice(datosEmpleados, "NSS")));
+
+			}catch (NumberFormatException e){
+				 nss = 0;
+			}
 			String antiguedad = datosEmpleado.get(obtenerIndice(datosEmpleados, "Antiguedad"));
 			String grupoProfesional = datosEmpleado.get(obtenerIndice(datosEmpleados, "Grupo_profesional"));
 			int grupoCotizacion = Integer.parseInt(datosEmpleado.get(obtenerIndice(datosEmpleados, "Grupo_Cotizacion")));
@@ -166,15 +203,14 @@ public class Main {
 			int departamento = Integer.parseInt(datosEmpleado.get(obtenerIndice(datosEmpleados, "Departamento")));
 
 
-			Empleado empleado = new Empleado(id, dni, nombre, apellido1, apellido2, cuenta, antiguedad, grupoProfesional, grupoCotizacion, email, departamento);
+			Empleado empleado = new Empleado(id, dni, nombre, apellido1, apellido2, cuenta,nss, antiguedad, grupoProfesional, grupoCotizacion, email, departamento);
 			empleados.add(empleado);
 		}
 	}
 
 
 	/**
-	 * @author Óscar Fernandez
-	 * @author Jose Vicente Ebri Gómez
+	 * autor/es: Óscar Fernandez, Jose Vicente Ebri Gómez
 	 */
 	public static ArrayList<ArrayList<String>> leerCsv(String path) {
 		ArrayList<ArrayList<String>> arrayEmpleado = new ArrayList<>();
@@ -214,9 +250,10 @@ public class Main {
 	//------------- Consultas -------------
 
 	/**
-	 * @author Jose Vicente
+	 * autor/es: Jose Vicente
 	 */
-	public static void buscarEmpleadoCategoria(String categoria) {
+	public static void buscarEmpleadoCategoria() {
+		String categoria = leerCadena("Introduce la categoria de la que obtener los empleados: ");
 		for (Empleado empleado: empleados) {
 			if (empleado.catGrupProfesional.equals(categoria)) {
 				imprimirDatosEmpleado(empleado);
@@ -225,7 +262,7 @@ public class Main {
 	}
 
 	/**
-	 * @author Óscar Fernandez
+	 * autor/es: Óscar Fernandez
 	 */
 	public static void imprimirDatosEmpleado(Empleado empleado) {
 
@@ -252,30 +289,40 @@ public class Main {
 	}
 
 	/**
-	 * @author Óscar Fernandez
+	 * autor/es: Óscar Fernandez
 	 */
 	public static void cantEmpleadosPorDepart() {
 
-		for (Departamento departamento : departamentos ) {
-			System.out.println("Hay " + contarEmpleadoEnDep(departamento.id) + " empleados en el departamento " + departamento.nombre);
+		if (departamentos.size() > 0){
+			for (Departamento departamento: departamentos) {
+				System.out.println("Hay " + contarEmpleadoEnDep(departamento.id) + " empleados en el departamento " + departamento.nombre);
+			}
+
+		}else {
+			System.out.println("No se han encontrado departamentos");
 		}
 
 	}
 
 	/**
-	 * @author Óscar Fernandez
+	 * autor/es: Óscar Fernandez, Jonathan Taban
 	 */
 	public static void buscarEmpleadoDNI() {
-		String dni = leerCadena("Introduce el DNI del empleado a buscar: ");
-		for (Empleado empleado: empleados) {
-			if (empleado.dni.equals(dni)) {
-				imprimirDatosEmpleado(empleado);
+
+		while (true) {
+			String dni = leerCadena("Introduce el DNI del empleado a buscar: ");
+			for (Empleado empleado: empleados) {
+				if (empleado.dni.equals(dni)) {
+					imprimirDatosEmpleado(empleado);
+					return;
+				}
 			}
+			System.out.println("No existe un empleado con ese DNI");
 		}
 	}
 
 	/**
-	 * @author Jose Vicente
+	 * autor/es: Jose Vicente
 	 */
 	public static Empleado buscarEmpleadoID(int id) {
 		for (Empleado empleado: empleados) {
@@ -287,24 +334,29 @@ public class Main {
 	}
 
 	/**
-	 * @author Jose Vicente Ebri
+	 * autor/es: Jose Vicente Ebri,  Jonathan Taban
 	 */
 
+
 	public static void buscarEmpleadoPorDepartamento() {
-		int id = leerEntero("Introduce el ID del departamento");
-		for (Empleado empleado: empleados) {
-			if (empleado.departamento == id) {
-				String name = empleado.nombre;
-				//name = length(name);
-				//System.out.println("ID: " + empleado.id + "\t" + "Empleado: " + empleado.nombre + String.format(name-"\t%-10s", "") + "Departamento: " + departamentos.get(id).nombre);
+		while (true){
+
+			int idDepartamento = leerEntero("Introduce el ID del departamento:");
+			for (Empleado empleado: empleados) {
+				if (empleado.departamento == idDepartamento) {
+					System.out.printf("ID: %-12s Empleado: %-12s Departamento: %-12s \n", empleado.id,empleado.nombre, departamentos.get(idDepartamento).nombre);
+					return;
+				}
 			}
+			System.out.println("No se ha encontrado un departamento con ese id");
 		}
+
 	}
 
 	//------------- Incorporaciones -------------
 
 	/**
-	 * @author Óscar Fernandez
+	 * autor/es: Óscar Fernandez
 	 */
 	public static void incorporarTrabajador() {
 		Empleado empleado = crearEmpleado();
@@ -318,6 +370,7 @@ public class Main {
 		String apellido1 = leerCadena("Introduce el primer apellido del empleado: ");
 		String apellido2 = leerCadena("Introduce el segundo apellido del empleado: ");
 		String cuenta = leerCadena("Introduce la cuenta del empleado: ");
+		int nss = leerEntero("Introduce el numero de la seguridad social del empleado: ");
 		int antiguedad = leerEntero("Introduce la antiguedad del empleado: ");
 		String catGrupProfesional = leerCadena("Introduce la categoria del grupo profesional del empleado: ");
 		String grupCotizacion = leerCadena("Introduce el grupo de cotizacion del empleado: ");
@@ -325,12 +378,12 @@ public class Main {
 		String email = leerCadena("Introduce el email del empleado: ");
 
 
-		Empleado empleado = new Empleado(id, dni, nombre, apellido1, apellido2, cuenta, catGrupProfesional, grupCotizacion, departamento, email, antiguedad);
+		Empleado empleado = new Empleado(id, dni, nombre, apellido1, apellido2, cuenta, nss, catGrupProfesional, grupCotizacion, departamento, email, antiguedad);
 		return empleado;
 	}
 
 	/**
-	 * @author Jose Vicente Ebri
+	 * autor/es: Jose Vicente Ebri
 	 */
 	public static void incorporarDepartamento() {
 		int id = departamentos.get(departamentos.size() - 1).id + 1;
@@ -345,7 +398,7 @@ public class Main {
 
 
 	/**
-	 * @author Jose Vicente Ebri
+	 * autor/es: Jose Vicente Ebri
 	 */
 	public static void modificarDatosPersonales() {
 		int id = leerEntero("Introduce el ID del empleado a modificar:");
@@ -366,7 +419,7 @@ public class Main {
 
 
 	/**
-	 * @author Oscar, Jose Vicente
+	 * autor/es: Oscar, Jose Vicente
 	 */
 	public static void eliminarDatosDepartamento() {
 		int id = leerEntero("Introduce el ID del Departamento a eliminar: ");
@@ -379,7 +432,7 @@ public class Main {
 				break;
 			}
 		}
-		if(departamento == null){
+		if (departamento == null) {
 			System.out.println("No se ha encontrado el departamento con el id " + id);
 			return;
 		}
@@ -400,7 +453,7 @@ public class Main {
 				case "si":
 					flag = false;
 
-					while(contarEmpleadoEnDep(id)>0){
+					while (contarEmpleadoEnDep(id) > 0) {
 						for (int j = 0; j < empleados.size(); j++) {
 							Empleado empleado = empleados.get(j);
 
@@ -437,7 +490,7 @@ public class Main {
 	}
 
 	/**
-	 * @author Pere Prior
+	 * autor/es: Pere Prior
 	 */
 	public static void eliminarDatosEmpleado() {
 		int id = leerEntero("Introduce el ID del empleado");
@@ -456,7 +509,7 @@ public class Main {
 	//------------- Guardar en CSVs -------------
 
 	/**
-	 * @author Óscar Fernandez
+	 * autor/es: Óscar Fernandez
 	 */
 	public static void escribirCSVs() {
 		if (empleados != null) {
@@ -474,13 +527,14 @@ public class Main {
 		}
 	}
 
+
 	/**
-	 * @author Óscar Fernandez
+	 * autor/es: Óscar Fernandez
 	 */
 	public static void escribirDepartamentoCSV() {
 
-		//TODO: Quitar el archivo hardcodeado.
-		File ficheroSalida = new File("./Programacion/CSVs/Departamento.csv");
+
+		File ficheroSalida = buscarArchivo(departamentosCSV);
 
 		try {
 			BufferedWriter flujoSalida = new BufferedWriter(new FileWriter(ficheroSalida));
@@ -501,11 +555,11 @@ public class Main {
 	}
 
 	/**
-	 * @author Óscar Fernandez
+	 * autor/es: Óscar Fernandez
 	 */
 	public static void escribirEmpleadosCSV() {
-		//TODO: Quitar el archivo hardcodeado.
-		File ficheroSalida = new File("./Programacion/CSVs/Empleado.csv");
+
+		File ficheroSalida = buscarArchivo(empleadosCSV);
 
 		try {
 			BufferedWriter flujoSalida = new BufferedWriter(new FileWriter(ficheroSalida));
@@ -514,7 +568,7 @@ public class Main {
 			flujoSalida.newLine();
 
 			for (Empleado empleado: empleados) {
-				flujoSalida.write(empleado.dni + ";" + empleado.nombre + ";" + empleado.apellido1 + ";" + empleado.apellido2 + ";" + empleado.cuenta + ";" + empleado.antiguedad + ";" + "" + ";" + empleado.catGrupProfesional + ";" + empleado.grupCotizacion + ";" + empleado.email + ";" + empleado.departamento + ";" + empleado.id);
+				flujoSalida.write(empleado.dni + ";" + empleado.nombre + ";" + empleado.apellido1 + ";" + empleado.apellido2 + ";" + empleado.cuenta + ";" + empleado.antiguedad + ";" + empleado.nss + ";" + empleado.catGrupProfesional + ";" + empleado.grupCotizacion + ";" + empleado.email + ";" + empleado.departamento + ";" + empleado.id);
 				flujoSalida.newLine();
 			}
 			flujoSalida.close();
@@ -528,13 +582,18 @@ public class Main {
 
 	//------------- Menus -------------
 
+
+
 	/**
-	 * @author Jonathan
+	 * autor/es: Jonathan
 	 */
 	public static void menu() {
 
 		do {
-			eleccion = leerEntero("1.Consultar | 2.Incorporar | 3.Modificar/Eliminar | 4. Exportar a CSV | 0.Salir");
+			limpiarPantalla();
+
+			System.out.println();
+			eleccion = leerEntero(String.format( lineaSup+"\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n"+ lineaInf,"1.Consultar " ,  "2.Incorporar", "3.Modificar/Eliminar", "4. Exportar a CSV", "0.Salir"));
 
 			switch (eleccion) {
 				case 1:
@@ -542,12 +601,17 @@ public class Main {
 					break;
 				case 2:
 					menuIncorporar();
+
 					break;
 				case 3:
 					menuModificar();
+
 					break;
 				case 4:
 					escribirCSVs();
+
+					break;
+				case 0:
 					break;
 				default:
 					System.out.println("Opcion inválida");
@@ -560,10 +624,15 @@ public class Main {
 
 	}
 
+	/**
+	 * autor/es: Jonathan
+	 */
 	public static void menuConsultar() {
 
 		do {
-			eleccion = leerEntero("1.Datos relacionados a Empleado | 2.Horas Extra | 3.Coste Salarial | 4.Volver al Inicio | 0.Salir");
+			limpiarPantalla();
+
+			eleccion = leerEntero(String.format( lineaSup+"\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n"+ lineaInf,"1.Empleados y departamentos","2.Horas Extra","3.Coste Salarial","4.Volver al Inicio","0.Salir"));
 
 			switch (eleccion) {
 				case 1:
@@ -578,52 +647,74 @@ public class Main {
 				case 4:
 					menu();
 					break;
+				case 0:
+					break;
 				default:
-					System.out.println("Se ha cerrado el programa");
+					System.out.println("Opcion invalida");
+
 			}
 			limpiarPantalla();
 
 		} while (eleccion != 0);
 	}
 
+	/**
+	 * autor/es: Jonathan
+	 */
 	public static void MenuRelacionadoaEmpleado() {
 
 		do {
-			eleccion = leerEntero("1.Mostrar todos los Empleado | 2.Empleado por DNI | 3.Empleado desde Dep. | 4.Numero de empleados por Dep. | 5.Datos empleado desde categoria | 6.Volver al Inicio | 0.Salir");
+			limpiarPantalla();
+
+			eleccion = leerEntero(String.format( lineaSup+"\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n"+ lineaInf,"1.Todos los Empleado", "2.Empleado por DNI", "3.Empleados en un departamento", "4.Numero de empleados por Dep.", "5.empleados por categorias", "6.Volver al Inicio", "0.Salir","","",""));
 
 			switch (eleccion) {
 				case 1:
 					for (Empleado empleado: empleados) {
 						imprimirDatosEmpleado(empleado);
 					}
+					esperarEnter();
 					break;
 				case 2:
 					buscarEmpleadoDNI();
+					esperarEnter();
+
 					break;
 				case 3:
 					buscarEmpleadoPorDepartamento();
+					esperarEnter();
+
 					break;
 				case 4:
 					cantEmpleadosPorDepart();
+					esperarEnter();
 					break;
 				case 5:
-					buscarEmpleadoCategoria(null);
+					buscarEmpleadoCategoria();
+					esperarEnter();
 					break;
 				case 6:
 					menu();
 					break;
+				case 0:
+					break;
 				default:
-					System.out.println("Se ha cerrado el programa");
+					System.out.println("Opcion Invalida");
 			}
 			limpiarPantalla();
 
 		} while (eleccion != 0);
 	}
 
+	/**
+	 * autor/es: Jonathan
+	 */
 	public static void MenuHorasExtra() {
 
 		do {
-			eleccion = leerEntero("1.Horas Extra por ID | 2.Horas Extra por DNI | 3.Volver al Inicio | 0.Salir");
+			limpiarPantalla();
+
+			eleccion = leerEntero(String.format( lineaSup+"\n| %-30s | %-30s | %-30s | %-30s | %-30s | %-30s |\n"+ lineaInf,"1.Horas Extra por ID", "2.Horas Extra por DNI", "3.Volver al Inicio", "0.Salir", "", ""));
 
 			switch (eleccion) {
 				case 1:
@@ -635,18 +726,25 @@ public class Main {
 				case 3:
 					menu();
 					break;
+				case 0:
+					break;
 				default:
-					System.out.println("Se ha cerrado el programa");
+					System.out.println("Opcion invalida");
+					esperarEnter();
 			}
 			limpiarPantalla();
 
 		} while (eleccion != 0);
 	}
 
+	/**
+	 * autor/es: Jonathan
+	 */
 	public static void MenuCosteSalarial() {
 
 		do {
-			eleccion = leerEntero("1.Coste Salarial por Grupo Cotizacion | 2.Coste Salarial desde Nombre | 3.Volver al Inicio | 0.Salir");
+			limpiarPantalla();
+			eleccion = leerEntero(String.format( lineaSup+"\n| %-30s | %-30s | %-30s | %-30s | %-30s | %-30s |\n"+ lineaInf,"1.Coste Salarial por Grupo Cotizacion", "2.Coste Salarial desde Nombre", "3.Volver al Inicio", "0.Salir", "", ""));
 
 			switch (eleccion) {
 				case 1:
@@ -658,31 +756,42 @@ public class Main {
 				case 3:
 					menu();
 					break;
+				case 0:
+					break;
 				default:
-					System.out.println("Se ha cerrado el programa");
+					System.out.println("Opcion invalida");
+					esperarEnter();
 			}
 			limpiarPantalla();
 
 		} while (eleccion != 0);
 	}
 
+	/**
+	 * autor/es: Jonathan
+	 */
 	public static void menuIncorporar() {
 
 		do {
-			eleccion = leerEntero("1.Nuevos Empleados | 2.Nuevos Departamentos | 3.Volver al Inicio | 0.Salir");
+			limpiarPantalla();
+			eleccion = leerEntero(String.format( lineaSup+"\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n"+ lineaInf,"1.Nuevos Empleados", "2.Nuevos Departamentos", "3.Volver al Inicio", "0.Salir", ""));
 
 			switch (eleccion) {
 				case 1:
 					incorporarTrabajador();
+					esperarEnter();
 					break;
 				case 2:
 					incorporarDepartamento();
+					esperarEnter();
+
 					break;
 				case 3:
 					menu();
 					break;
 				default:
 					System.out.println("Opcion inválida");
+					esperarEnter();
 					continue;
 			}
 			limpiarPantalla();
@@ -691,27 +800,40 @@ public class Main {
 
 	}
 
+	/**
+	 * autor/es: Jonathan
+	 */
 	public static void menuModificar() {
 
 		do {
-			eleccion = leerEntero("1.Modificar Datos Personales Empleado | 2.Eliminar Datos Departamentos | 3.Eliminar Datos Personales | 4.Volver al Inicio | 0.Salir");
+			limpiarPantalla();
+			eleccion = leerEntero(String.format( lineaSup+"\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n"+ lineaInf,"1.Modificar Datos Empleado", "2.Eliminar Datos Departamentos", "3.Eliminar Datos Personales", "4.Volver al Inicio", "0.Salir"));
 
 			switch (eleccion) {
 				case 1:
 					//Modificar Datos Personales Empleado
 					modificarDatosPersonales();
+					esperarEnter();
+
 					break;
 				case 2:
 					eliminarDatosDepartamento();
+					esperarEnter();
+
 					break;
 				case 3:
 					eliminarDatosEmpleado();
+					esperarEnter();
+
 					break;
 				case 4:
 					menu();
 					break;
+				case 0:
+					break;
 				default:
 					System.out.println("Opcion inválida");
+					esperarEnter();
 					continue;
 			}
 			limpiarPantalla();
