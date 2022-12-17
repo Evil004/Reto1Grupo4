@@ -6,8 +6,17 @@ codigo fuente o descargando el archivo ejecutable ya compilado.
 
 ### Ejecutar con el coodigo fuente
 Para ejecutar con el codigo fuente ejecutamos los siguientes comandos:
-~~~shell
-git clone git clone https://github.com/Evil004/Reto1Grupo4
-cd Reto1Grupo4
 
+Linux:
+~~~ shell
+git clone https://github.com/Evil004/Reto1Grupo4
+cd Reto1Grupo4
+./run.sh
+~~~
+
+Windows (Asegurate de tener un terminal con 166 columnas o mas):
+~~~ shell
+git clone https://github.com/Evil004/Reto1Grupo4
+cd Reto1Grupo4
+./run.bat
 ~~~

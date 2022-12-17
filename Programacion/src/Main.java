@@ -314,17 +314,19 @@ public class Main {
 	 * autor/es: Jose Vicente Ebri
 	 */
 	public static void consultarHorasExtraDNI() {
-		while (true){
-		String dni = leerCadena("Introduce el DNI del empleado: ");
-		for (HorasExtra hora: horasExtra) {
-			if (hora.nif.equals(dni)) {
-				int horas = (hora.hora_f - hora.hora_i);
-				System.out.println("Pepe ha realizado " + horas + " horas extra");
-				return;
+		while (true) {
+			String dni = leerCadena("Introduce el DNI del empleado: ");
+			for (HorasExtra hora: horasExtra) {
+				if (hora.nif.equals(dni)) {
+					int horas = (hora.hora_f - hora.hora_i);
+					System.out.println("Pepe ha realizado " + horas + " horas extra");
+					return;
+				}
 			}
-			System.out.println("No existe un DNI correspondiente al introducido");
-			}
+			System.out.println("No existe un empleado con ese DNI");
+
 		}
+
 	}
 
 	/**
@@ -332,18 +334,20 @@ public class Main {
 	 */
 	public static void consultarHorasExtraID() {
 		String dniEmpleado = null;
+		Empleado empleado = null;
 
-		while (true){
+		while (true) {
 			int idEmpleado = leerEntero("Introduce el ID del empleado: ");
-
-			for (Empleado empleado : empleados) {
-			    if (empleado.id ==idEmpleado){
-					dniEmpleado = empleado.dni;
+					
+			for (Empleado empleadoTemp: empleados) {
+				if (empleadoTemp.id == idEmpleado) {
+					empleado = empleadoTemp;
+					dniEmpleado = empleadoTemp.dni;
 				}
 			}
-			if (dniEmpleado != null){
+			if (dniEmpleado != null) {
 				break;
-			}else {
+			} else {
 				System.out.println("No se ha encontrado un empleado con ese ID.");
 
 			}
@@ -351,13 +355,13 @@ public class Main {
 
 
 		for (HorasExtra hora: horasExtra) {
-				if (hora.nif.equals(dniEmpleado)) {
-					int horas = (hora.hora_f - hora.hora_i);
-					System.out.println("Pepe ha realizado " + horas + " horas extra");
-					return;
-				}
-				System.out.println("No existe un DNI correspondiente al introducido");
+			if (hora.nif.equals(dniEmpleado)) {
+				int horas = (hora.hora_f - hora.hora_i);
+				System.out.println( empleado.nombre + " ha realizado " + horas + " horas extra");
+				return;
 			}
+
+		}
 	}
 
 	/**
@@ -404,12 +408,12 @@ public class Main {
 
 		for (Departamento departamento: departamentos) {
 			int costeDepartamento = 0;
-			if (departamento.id == idDepartamento){
+			if (departamento.id == idDepartamento) {
 
-				for (Empleado empleado : empleados) {
-					if(empleado.departamento == idDepartamento){
-						for (GrupoCotizacion grupoCotizacion : gruposCotizacion) {
-						    if(empleado.grupCotizacion == grupoCotizacion.id){
+				for (Empleado empleado: empleados) {
+					if (empleado.departamento == idDepartamento) {
+						for (GrupoCotizacion grupoCotizacion: gruposCotizacion) {
+							if (empleado.grupCotizacion == grupoCotizacion.id) {
 								costeDepartamento += grupoCotizacion.sueldoBase;
 							}
 						}
@@ -503,7 +507,7 @@ public class Main {
 			int idEmpleado = leerEntero("Introduce el ID del empleado a buscar");
 			for (Empleado empleado: empleados) {
 				if (empleado.id == idEmpleado) {
-					imprimirDatosEmpleado( empleado);
+					imprimirDatosEmpleado(empleado);
 					return;
 				}
 			}
@@ -541,7 +545,7 @@ public class Main {
 
 				}
 			}
-			if (flag){
+			if (flag) {
 				return;
 			}
 			System.out.println("No se ha encontrado un departamento con ese id");
