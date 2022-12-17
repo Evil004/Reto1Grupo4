@@ -57,10 +57,6 @@ public class Main {
 
 	}
 
-	public static String pedirFecha() {
-		leerCadena("");
-		return "a";
-	}
 
 	/**
 	 * autor/es: Óscar Fernandez
@@ -322,7 +318,7 @@ public class Main {
 					for (Empleado empleado: empleados) {
 						if (empleado.dni.equals(dni)) {
 							int horas = (hora.hora_f - hora.hora_i);
-							System.out.println(empleado.nombre+" ha realizado " + horas + " horas extra");
+							System.out.println(empleado.nombre + " ha realizado " + horas + " horas extra");
 							return;
 						}
 					}
@@ -363,7 +359,7 @@ public class Main {
 		for (HorasExtra hora: horasExtra) {
 			if (hora.nif.equals(dniEmpleado)) {
 				int horas = (hora.hora_f - hora.hora_i);
-				System.out.println( empleado.nombre + " ha realizado " + horas + " horas extra");
+				System.out.println(empleado.nombre + " ha realizado " + horas + " horas extra");
 				return;
 			}
 
@@ -399,7 +395,7 @@ public class Main {
 				}
 			}
 
-			if(grupoCotizacion.id == categoria){
+			if (grupoCotizacion.id == categoria) {
 				System.out.println("El grupo de cotizacion " + grupoCotizacion.id + " tiene un coste salarial de " + grupoCotizacion.sueldoBase * empleadosPorGrupo + "€");
 
 			}
@@ -721,47 +717,48 @@ public class Main {
 	 * autor/es: Pere Prior
 	 */
 	public static void eliminarDatosEmpleado() {
-		int id = leerEntero("Introduce el ID del empleado");
-
-		Empleado empleado = null;
-
-		for (int i = 0; i < empleados.size(); i++) {
-
-			empleado = empleados.get(i);
-
-			if (empleado.id == id) {
-				break;
-			}
-
-		}
-
-		if (empleado == null) {
-
-			System.out.println("No se ha encontrado ningun empleado con el id " + id);
-			return;
-
-		}
-
-		System.out.println("Va a eliminar el empleado" + empleado.nombre);
 
 		while (true) {
 
-			String decision = leerCadena("Quieres continuar? (si/no)");
+			int id = leerEntero("Introduce el ID del empleado");
 
-			switch (decision) {
 
-				case "si":
-					empleados.remove(empleado);
-					return;
+			for (int i = 0; i < empleados.size(); i++) {
 
-				case "no":
-					System.out.println("Eliminacion cancelada");
-					return;
+				Empleado empleado = empleados.get(i);
 
-				default:
-					System.out.println("Introduce una respuesta valida");
+				if (empleado.id == id) {
+
+
+					System.out.println("Va a eliminar el empleado " + empleado.nombre);
+
+					while (true) {
+
+						String decision = leerCadena("Quieres continuar? (si/no)");
+
+						switch (decision) {
+
+							case "si":
+								empleados.remove(empleado);
+								System.out.println("Se ha eliminado el empleado");
+								return;
+
+							case "no":
+								System.out.println("Eliminacion cancelada");
+								return;
+
+							default:
+								System.out.println("Introduce una respuesta valida");
+						}
+					}
+				}
+
+
 			}
+			System.out.println("No se ha encontrado ningun empleado con el id " + id);
+			return;
 		}
+
 
 	}
 
@@ -870,7 +867,7 @@ public class Main {
 					break;
 				case 4:
 					escribirCSVs();
-
+					esperarEnter();
 					break;
 				case 0:
 					break;
@@ -1077,7 +1074,7 @@ public class Main {
 
 		do {
 			limpiarPantalla();
-			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Modificar Datos Empleado", "2.Eliminar Datos Departamentos", "3.Eliminar Datos Personales", "4.Ir al menu anterior", "0.Salir"));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Modificar Datos Empleado", "2.Eliminar Datos Departamentos", "3.Eliminar Datos Empleado", "4.Ir al menu anterior", "0.Salir"));
 
 			switch (eleccion) {
 				case 1:
