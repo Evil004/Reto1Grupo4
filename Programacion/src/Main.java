@@ -10,6 +10,7 @@ import java.util.Scanner;
  */
 public class Main {
 	public static Scanner inputValue;
+	public static boolean guardado = true;
 
 	public static File carpeta = new File("./Programacion/CSVs");
 	public static final String empleadosCSV = "Empleado.csv";
@@ -21,6 +22,7 @@ public class Main {
 	public static ArrayList<Departamento> departamentos = new ArrayList<>();
 	public static ArrayList<GrupoCotizacion> gruposCotizacion = new ArrayList<>();
 	public static ArrayList<HorasExtra> horasExtra = new ArrayList<>();
+
 	public static String camposCSVEmpleados;
 	public static int eleccion;
 	public static String lineaInf = generarLinea("¯");
@@ -107,14 +109,6 @@ public class Main {
 	/**
 	 * autor/es: Óscar Fernandez
 	 */
-	public static void esperarEnterYLimpuar() {
-		esperarEnter();
-		limpiarPantalla();
-	}
-
-	/**
-	 * autor/es: Óscar Fernandez
-	 */
 	//Una funcion que busca un archivo con un nombre dado
 	public static File buscarArchivo(String nombreArchivo) {
 		for (File archivo: carpeta.listFiles()) {
@@ -140,24 +134,18 @@ public class Main {
 
 
 				case empleadosCSV:
-
 					cargarEmpleados(archivo);
-
 					break;
 
-				// Si hay un archivo de departamentos
 				case departamentosCSV:
-
 					cargarDepartamentos(archivo);
 					break;
 
-
 				case grupoCotizacionCSV:
-
 					cargarGrupoCotizacion(archivo);
 					break;
-				case horasExtraCSV:
 
+				case horasExtraCSV:
 					cargarHorasExtra(archivo);
 					break;
 
@@ -565,6 +553,8 @@ public class Main {
 	public static void incorporarTrabajador() {
 		Empleado empleado = crearEmpleado();
 		empleados.add(empleado);
+		System.out.println("Se ha creado un nuevo empleado");
+		guardado = false;
 	}
 
 	//TODO: Puedes añadir departamentos, grupos y categorias que no existen
@@ -597,6 +587,8 @@ public class Main {
 
 		Departamento departamento = new Departamento(id, nombre);
 		departamentos.add(departamento);
+		System.out.println("Se ha creado un nuevo departamento");
+		guardado = false;
 	}
 
 	//---------------- Modificar ----------------
@@ -611,27 +603,31 @@ public class Main {
 
 			int id = leerEntero("Introduce el ID del empleado a modificar:");
 
-			if (id <= empleados.size()) {
+			for (Empleado empleado: empleados) {
+				if (id == empleado.id) {
 
-				imprimirDatosEmpleado(buscarEmpleadoID(id));
-				System.out.println("...................");
+					imprimirDatosEmpleado(buscarEmpleadoID(id));
+					System.out.println("...................");
 
-				System.out.println("\nIntroduce los datos modificados: \n");
-				Empleado empleadoAModificar = crearEmpleado();
+					System.out.println("\nIntroduce los datos modificados: \n");
+					Empleado empleadoAModificar = crearEmpleado();
 
-				empleadoAModificar.id = id;
-				empleados.set(empleados.indexOf(buscarEmpleadoID(id)), empleadoAModificar);
-				for (Empleado empleado: empleados) {
+					empleadoAModificar.id = id;
+					empleados.set(empleados.indexOf(buscarEmpleadoID(id)), empleadoAModificar);
+
 					imprimirDatosEmpleado(empleado);
+					guardado = false;
+
+					return;
+
+				} else {
+
+					System.out.println("Opcion no valida.");
+
 				}
-				return;
-
-			} else {
-
-				System.out.println("Opcion no valida.");
-
 			}
 		}
+
 
 	}
 
@@ -665,6 +661,8 @@ public class Main {
 				case "si":
 					if (numEmpleados <= 0) {
 						departamentos.remove(departamento);
+						guardado = false;
+
 						return;
 					}
 
@@ -688,7 +686,7 @@ public class Main {
 								}
 
 								departamentos.remove(departamento);
-
+								guardado = false;
 								return;
 							case "no":
 								System.out.println("Eliminacion cancelada");
@@ -741,6 +739,8 @@ public class Main {
 							case "si":
 								empleados.remove(empleado);
 								System.out.println("Se ha eliminado el empleado");
+								guardado = false;
+
 								return;
 
 							case "no":
@@ -868,9 +868,20 @@ public class Main {
 				case 4:
 					escribirCSVs();
 					esperarEnter();
+					guardado = true;
 					break;
 				case 0:
+
+
+					boolean cerrar = comprobarSiCerrar();
+					if (!cerrar) {
+						eleccion = -1;
+					} else {
+						eleccion = 0;
+						continue;
+					}
 					break;
+
 				default:
 					System.out.println("Opcion inválida");
 					continue;
@@ -880,6 +891,31 @@ public class Main {
 		} while (eleccion != 0);
 		System.out.println("Cerrando el programa...");
 
+	}
+
+	private static boolean comprobarSiCerrar() {
+		boolean cerrar = false;
+		if (!guardado) {
+
+			boolean flag = true;
+			while (flag) {
+				String eleccion = leerCadena("Vas a cerrar el programa, pero tienes datos sin guardar, estas seguro? (si/no)");
+				switch (eleccion) {
+
+					case "si":
+						flag = false;
+						cerrar = true;
+						break;
+					case "no":
+						flag = false;
+						break;
+					default:
+						System.out.println("No has introducido una opcion valida.");
+				}
+			}
+
+		}
+		return cerrar;
 	}
 
 	/**
@@ -906,6 +942,13 @@ public class Main {
 					return;
 
 				case 0:
+					boolean cerrar = comprobarSiCerrar();
+					if (!cerrar) {
+						eleccion = -1;
+					} else {
+						eleccion = 0;
+						continue;
+					}
 					break;
 				default:
 					System.out.println("Opcion invalida");
@@ -959,6 +1002,13 @@ public class Main {
 					return;
 
 				case 0:
+					boolean cerrar = comprobarSiCerrar();
+					if (!cerrar) {
+						eleccion = -1;
+					} else {
+						eleccion = 0;
+						continue;
+					}
 					break;
 				default:
 					System.out.println("Opcion Invalida");
@@ -991,6 +1041,13 @@ public class Main {
 					return;
 
 				case 0:
+					boolean cerrar = comprobarSiCerrar();
+					if (!cerrar) {
+						eleccion = -1;
+					} else {
+						eleccion = 0;
+						continue;
+					}
 					break;
 				default:
 					System.out.println("Opcion invalida");
@@ -1024,6 +1081,13 @@ public class Main {
 					return;
 
 				case 0:
+					boolean cerrar = comprobarSiCerrar();
+					if (!cerrar){
+						eleccion = -1;
+					}else{
+						eleccion = 0;
+						continue;
+					}
 					break;
 				default:
 					System.out.println("Opcion invalida");
@@ -1055,6 +1119,15 @@ public class Main {
 					break;
 				case 3:
 					return;
+				case 0:
+					boolean cerrar = comprobarSiCerrar();
+					if (!cerrar){
+						eleccion = -1;
+					}else{
+						eleccion = 0;
+						continue;
+					}
+					break;
 
 				default:
 					System.out.println("Opcion inválida");
@@ -1095,6 +1168,13 @@ public class Main {
 				case 4:
 					return;
 				case 0:
+					boolean cerrar = comprobarSiCerrar();
+					if (!cerrar){
+						eleccion = -1;
+					}else{
+						eleccion = 0;
+						continue;
+					}
 					break;
 				default:
 					System.out.println("Opcion inválida");
