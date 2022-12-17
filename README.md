@@ -20,3 +20,10 @@ git clone https://github.com/Evil004/Reto1Grupo4
 cd Reto1Grupo4
 ./run.bat
 ~~~
+
+### Ejecutar desde archivo ya compilado.
+Acceder a este [enlace](https://github.com/Evil004/Reto1Grupo4/releases) y descargar el .zip con el programa ya compilado.
+una vez descargado descomprimir, entrar en la carpeta y ejecutar el .jar con el siguiente comando:
+~~~ shell
+java -jar GestionDeEmpresa.jar
+~~~

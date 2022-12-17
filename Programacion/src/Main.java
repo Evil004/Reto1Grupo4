@@ -317,13 +317,19 @@ public class Main {
 		while (true) {
 			String dni = leerCadena("Introduce el DNI del empleado: ");
 			for (HorasExtra hora: horasExtra) {
+
 				if (hora.nif.equals(dni)) {
-					int horas = (hora.hora_f - hora.hora_i);
-					System.out.println("Pepe ha realizado " + horas + " horas extra");
-					return;
+					for (Empleado empleado: empleados) {
+						if (empleado.dni.equals(dni)) {
+							int horas = (hora.hora_f - hora.hora_i);
+							System.out.println(empleado.nombre+" ha realizado " + horas + " horas extra");
+							return;
+						}
+					}
+
 				}
 			}
-			System.out.println("No existe un empleado con ese DNI");
+			System.out.println("Ese empleado no tiene horas extra.");
 
 		}
 
@@ -338,7 +344,7 @@ public class Main {
 
 		while (true) {
 			int idEmpleado = leerEntero("Introduce el ID del empleado: ");
-					
+
 			for (Empleado empleadoTemp: empleados) {
 				if (empleadoTemp.id == idEmpleado) {
 					empleado = empleadoTemp;
@@ -362,6 +368,7 @@ public class Main {
 			}
 
 		}
+		System.out.println("Ese empleado no tiene horas extra.");
 	}
 
 	/**
@@ -392,11 +399,12 @@ public class Main {
 				}
 			}
 
-			System.out.println("El grupo de cotizacion " + grupoCotizacion.id + " tiene un coste salarial de " + grupoCotizacion.sueldoBase * empleadosPorGrupo + "€");
-		}
-		for (Empleado empleado: empleados) {
+			if(grupoCotizacion.id == categoria){
+				System.out.println("El grupo de cotizacion " + grupoCotizacion.id + " tiene un coste salarial de " + grupoCotizacion.sueldoBase * empleadosPorGrupo + "€");
 
+			}
 		}
+
 
 	}
 
@@ -885,7 +893,7 @@ public class Main {
 		do {
 			limpiarPantalla();
 
-			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Empleados y departamentos", "2.Horas Extra", "3.Coste Salarial", "4.Volver al Inicio", "0.Salir"));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Empleados y departamentos", "2.Horas Extra", "3.Coste Salarial", "4.Ir al menu anterior", "0.Salir"));
 
 			switch (eleccion) {
 				case 1:
@@ -919,7 +927,7 @@ public class Main {
 		do {
 			limpiarPantalla();
 
-			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Todos los Empleado", "2.Empleado por DNI", "3.Empleados en un departamento", "4.Numero de empleados por Dep.", "5.empleados por categorias", "6.Empleado por ID", "7.Volver al Inicio", "0.Salir", "", "", ""));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Todos los Empleado", "2.Empleado por DNI", "3.Empleados en un departamento", "4.Numero de empleados por Dep.", "5.empleados por categorias", "6.Empleado por ID", "7.Ir al menu anterior", "0.Salir", "", "", ""));
 
 			switch (eleccion) {
 				case 1:
@@ -971,7 +979,7 @@ public class Main {
 		do {
 			limpiarPantalla();
 
-			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Horas Extra por ID", "2.Horas Extra por DNI", "3.Volver al Inicio", "0.Salir", "", ""));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Horas Extra por ID", "2.Horas Extra por DNI", "3.Ir al menu anterior", "0.Salir", ""));
 
 			switch (eleccion) {
 				case 1:
@@ -1003,7 +1011,7 @@ public class Main {
 
 		do {
 			limpiarPantalla();
-			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Coste por Grupo Cotizacion", "2.Coste Salarial Departamento", "3.Volver al Inicio", "0.Salir", "", ""));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Coste por Grupo Cotizacion", "2.Coste Salarial Departamento", "3.Ir al menu anterior", "0.Salir", "", ""));
 
 			switch (eleccion) {
 				case 1:
@@ -1036,7 +1044,7 @@ public class Main {
 
 		do {
 			limpiarPantalla();
-			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Nuevos Empleados", "2.Nuevos Departamentos", "3.Volver al Inicio", "0.Salir", ""));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Nuevos Empleados", "2.Nuevos Departamentos", "3.Ir al menu anterior", "0.Salir", ""));
 
 			switch (eleccion) {
 				case 1:
@@ -1069,7 +1077,7 @@ public class Main {
 
 		do {
 			limpiarPantalla();
-			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Modificar Datos Empleado", "2.Eliminar Datos Departamentos", "3.Eliminar Datos Personales", "4.Volver al Inicio", "0.Salir"));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Modificar Datos Empleado", "2.Eliminar Datos Departamentos", "3.Eliminar Datos Personales", "4.Ir al menu anterior", "0.Salir"));
 
 			switch (eleccion) {
 				case 1:
