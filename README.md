@@ -23,7 +23,8 @@ cd Reto1Grupo4
 
 ### Ejecutar desde archivo ya compilado.
 Acceder a este [enlace](https://github.com/Evil004/Reto1Grupo4/releases) y descargar el .zip con el programa ya compilado.
-una vez descargado descomprimir, entrar en la carpeta y ejecutar el .jar con el siguiente comando:
+
+Una vez descargado hay que decomprimir la carpeta, entramos en la carpeta y contendra una carpeta y un archivo ejecutable .jar, en la carpeta llamada "CSVs" introducimos los csv con los datos y ejecutamos el .jar con el siguiente comando:
 ~~~ shell
 java -jar GestionDeEmpresa.jar
 ~~~

@@ -13,7 +13,7 @@ public class Main {
 	public static Scanner inputValue;
 	public static boolean guardado = true;
 
-	public static File carpeta = new File("./Programacion/CSVs");
+	public static File carpeta = new File("./CSVs");
 	public static final String empleadosCSV = "Empleado.csv";
 	public static final String grupoCotizacionCSV = "Grupo_Cotizacion.csv";
 	public static final String horasExtraCSV = "Horas_Extra.csv";
@@ -31,11 +31,10 @@ public class Main {
 
 
 	public static void main(String[] args) {
+
 		if (leerCarpeta()) {
 			menu();
-
 		}
-
 	}
 
 
@@ -169,6 +168,16 @@ public class Main {
 		boolean hayGruposCotizacion = false;
 		boolean hayHorasExtra = false;
 
+
+		if (carpeta.listFiles() == null){
+			try {
+				System.out.println("No se ha encontrado la carpeta CSVs en la ruta: "+ carpeta.getCanonicalPath());
+
+			}catch (IOException e){
+				System.out.println("No se ha encontrado la carpeta CSVs en la ruta: "+ carpeta.getAbsolutePath());
+			}
+			return false;
+		}
 
 		for (File archivo: carpeta.listFiles()) {
 
