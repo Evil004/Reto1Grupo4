@@ -30,8 +30,10 @@ public class Main {
 
 
 	public static void main(String[] args) {
-		leerCarpeta();
-		menu();
+		if (leerCarpeta()) {
+			menu();
+
+		}
 
 	}
 
@@ -53,10 +55,10 @@ public class Main {
 
 					case "si":
 						flag = false;
-						cerrar = true;
 						break;
 					case "no":
 						flag = false;
+						cerrar = false;
 						break;
 					default:
 						System.out.println("No has introducido una opcion valida.");
@@ -66,6 +68,7 @@ public class Main {
 		}
 		return cerrar;
 	}
+
 	/**
 	 * autor/es: Óscar Fernandez
 	 */
@@ -94,7 +97,7 @@ public class Main {
 	public static String generarLinea(String caracter) {
 		String linea = "";
 		for (int i = 0; i < 166; i++) {
-			linea += caracter;
+			linea = linea.concat(caracter);
 		}
 		return linea;
 	}
@@ -139,6 +142,10 @@ public class Main {
 	 */
 	//Una funcion que busca un archivo con un nombre dado
 	public static File buscarArchivo(String nombreArchivo) {
+		if (carpeta.listFiles() == null) {
+			return new File(carpeta.getPath() + "/" + nombreArchivo);
+		}
+
 		for (File archivo: carpeta.listFiles()) {
 			if (archivo.getName() == nombreArchivo) {
 				return archivo;
@@ -154,7 +161,13 @@ public class Main {
 	/**
 	 * autor/es: Óscar Fernandez
 	 */
-	public static void leerCarpeta() {
+	public static boolean leerCarpeta() {
+
+		boolean hayDepatamentos = false;
+		boolean hayEmpleados = false;
+		boolean hayGruposCotizacion = false;
+		boolean hayHorasExtra = false;
+
 
 		for (File archivo: carpeta.listFiles()) {
 
@@ -163,24 +176,58 @@ public class Main {
 
 				case empleadosCSV:
 					cargarEmpleados(archivo);
+					hayEmpleados = true;
 					break;
 
 				case departamentosCSV:
 					cargarDepartamentos(archivo);
+					hayDepatamentos = true;
+
 					break;
 
 				case grupoCotizacionCSV:
 					cargarGrupoCotizacion(archivo);
+					hayGruposCotizacion = true;
 					break;
 
 				case horasExtraCSV:
 					cargarHorasExtra(archivo);
+					hayHorasExtra = true;
 					break;
 
 			}
 		}
 
+		if (!hayDepatamentos || !hayEmpleados || !hayGruposCotizacion || !hayHorasExtra) {
+			System.out.println("No se han encontrado todos los archivos necesarios.");
+			System.out.println("Faltan los siguientes archivos:\n");
+			if (!hayDepatamentos) {
+				System.out.println("\t" + departamentosCSV);
+			}
+			if (!hayEmpleados) {
+				System.out.println("\t" +empleadosCSV);
+			}
+			if (!hayGruposCotizacion) {
+				System.out.println("\t" +grupoCotizacionCSV);
+			}
+			if (!hayHorasExtra) {
+				System.out.println("\t" +horasExtraCSV);
+			}
 
+			try {
+				System.out.println("\nRevise que sus archvos esten en: '" + carpeta.getCanonicalPath() + "' y que tengan el nombre correcto. El programa se cerrara.");
+
+			} catch (IOException e) {
+				System.out.println("\nRevise que sus archvos esten en: '" + carpeta.getAbsolutePath() + "' y que tengan el nombre correcto. El programa se cerrara.");
+
+			}
+			esperarEnter();
+			return false;
+		}
+
+
+
+		return true;
 	}
 
 	/**
@@ -922,7 +969,6 @@ public class Main {
 	}
 
 
-
 	/**
 	 * autor/es: Jonathan
 	 */
@@ -1087,9 +1133,9 @@ public class Main {
 
 				case 0:
 					boolean cerrar = comprobarSiCerrar();
-					if (!cerrar){
+					if (!cerrar) {
 						eleccion = -1;
-					}else{
+					} else {
 						eleccion = 0;
 						continue;
 					}
@@ -1126,9 +1172,9 @@ public class Main {
 					return;
 				case 0:
 					boolean cerrar = comprobarSiCerrar();
-					if (!cerrar){
+					if (!cerrar) {
 						eleccion = -1;
-					}else{
+					} else {
 						eleccion = 0;
 						continue;
 					}
@@ -1174,9 +1220,9 @@ public class Main {
 					return;
 				case 0:
 					boolean cerrar = comprobarSiCerrar();
-					if (!cerrar){
+					if (!cerrar) {
 						eleccion = -1;
-					}else{
+					} else {
 						eleccion = 0;
 						continue;
 					}
