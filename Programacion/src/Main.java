@@ -1,5 +1,6 @@
 package Programacion.src;
 
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -10,6 +11,7 @@ import java.util.Scanner;
  */
 public class Main {
 	public static Scanner inputValue;
+	public static boolean guardado = true;
 
 	public static File carpeta = new File("./Programacion/CSVs");
 	public static final String empleadosCSV = "Empleado.csv";
@@ -21,6 +23,7 @@ public class Main {
 	public static ArrayList<Departamento> departamentos = new ArrayList<>();
 	public static ArrayList<GrupoCotizacion> gruposCotizacion = new ArrayList<>();
 	public static ArrayList<HorasExtra> horasExtra = new ArrayList<>();
+
 	public static String camposCSVEmpleados;
 	public static int eleccion;
 	public static String lineaInf = generarLinea("¯");
@@ -28,13 +31,44 @@ public class Main {
 
 
 	public static void main(String[] args) {
-		leerCarpeta();
-		menu();
+		if (leerCarpeta()) {
+			menu();
+
+		}
 
 	}
 
 
 	//------------- Funciones Generales -------------
+
+	/**
+	 * autor/es: Óscar Fernandez
+	 */
+
+	private static boolean comprobarSiCerrar() {
+		boolean cerrar = true;
+		if (!guardado) {
+
+			boolean flag = true;
+			while (flag) {
+				String eleccion = leerCadena("Vas a cerrar el programa, pero tienes datos sin guardar, estas seguro? (si/no)");
+				switch (eleccion) {
+
+					case "si":
+						flag = false;
+						break;
+					case "no":
+						flag = false;
+						cerrar = false;
+						break;
+					default:
+						System.out.println("No has introducido una opcion valida.");
+				}
+			}
+
+		}
+		return cerrar;
+	}
 
 	/**
 	 * autor/es: Óscar Fernandez
@@ -57,10 +91,6 @@ public class Main {
 
 	}
 
-	public static String pedirFecha() {
-		leerCadena("");
-		return "a";
-	}
 
 	/**
 	 * autor/es: Óscar Fernandez
@@ -68,7 +98,7 @@ public class Main {
 	public static String generarLinea(String caracter) {
 		String linea = "";
 		for (int i = 0; i < 166; i++) {
-			linea += caracter;
+			linea = linea.concat(caracter);
 		}
 		return linea;
 	}
@@ -111,16 +141,12 @@ public class Main {
 	/**
 	 * autor/es: Óscar Fernandez
 	 */
-	public static void esperarEnterYLimpuar() {
-		esperarEnter();
-		limpiarPantalla();
-	}
-
-	/**
-	 * autor/es: Óscar Fernandez
-	 */
 	//Una funcion que busca un archivo con un nombre dado
 	public static File buscarArchivo(String nombreArchivo) {
+		if (carpeta.listFiles() == null) {
+			return new File(carpeta.getPath() + "/" + nombreArchivo);
+		}
+
 		for (File archivo: carpeta.listFiles()) {
 			if (archivo.getName() == nombreArchivo) {
 				return archivo;
@@ -136,7 +162,13 @@ public class Main {
 	/**
 	 * autor/es: Óscar Fernandez
 	 */
-	public static void leerCarpeta() {
+	public static boolean leerCarpeta() {
+
+		boolean hayDepatamentos = false;
+		boolean hayEmpleados = false;
+		boolean hayGruposCotizacion = false;
+		boolean hayHorasExtra = false;
+
 
 		for (File archivo: carpeta.listFiles()) {
 
@@ -144,31 +176,59 @@ public class Main {
 
 
 				case empleadosCSV:
-
 					cargarEmpleados(archivo);
-
+					hayEmpleados = true;
 					break;
 
-				// Si hay un archivo de departamentos
 				case departamentosCSV:
-
 					cargarDepartamentos(archivo);
-					break;
+					hayDepatamentos = true;
 
+					break;
 
 				case grupoCotizacionCSV:
-
 					cargarGrupoCotizacion(archivo);
+					hayGruposCotizacion = true;
 					break;
-				case horasExtraCSV:
 
+				case horasExtraCSV:
 					cargarHorasExtra(archivo);
+					hayHorasExtra = true;
 					break;
 
 			}
 		}
 
+		if (!hayDepatamentos || !hayEmpleados || !hayGruposCotizacion || !hayHorasExtra) {
+			System.out.println("No se han encontrado todos los archivos necesarios.");
+			System.out.println("Faltan los siguientes archivos:\n");
+			if (!hayDepatamentos) {
+				System.out.println("\t" + departamentosCSV);
+			}
+			if (!hayEmpleados) {
+				System.out.println("\t" +empleadosCSV);
+			}
+			if (!hayGruposCotizacion) {
+				System.out.println("\t" +grupoCotizacionCSV);
+			}
+			if (!hayHorasExtra) {
+				System.out.println("\t" +horasExtraCSV);
+			}
 
+			try {
+				System.out.println("\nRevise que sus archvos esten en: '" + carpeta.getCanonicalPath() + "' y que tengan el nombre correcto. El programa se cerrara.");
+
+			} catch (IOException e) {
+				System.out.println("\nRevise que sus archvos esten en: '" + carpeta.getAbsolutePath() + "' y que tengan el nombre correcto. El programa se cerrara.");
+
+			}
+			esperarEnter();
+			return false;
+		}
+
+
+
+		return true;
 	}
 
 	/**
@@ -314,17 +374,25 @@ public class Main {
 	 * autor/es: Jose Vicente Ebri
 	 */
 	public static void consultarHorasExtraDNI() {
-		while (true){
-		String dni = leerCadena("Introduce el DNI del empleado: ");
-		for (HorasExtra hora: horasExtra) {
-			if (hora.nif.equals(dni)) {
-				int horas = (hora.hora_f - hora.hora_i);
-				System.out.println("Pepe ha realizado " + horas + " horas extra");
-				return;
+		while (true) {
+			String dni = leerCadena("Introduce el DNI del empleado: ");
+			for (HorasExtra hora: horasExtra) {
+
+				if (hora.nif.equals(dni)) {
+					for (Empleado empleado: empleados) {
+						if (empleado.dni.equals(dni)) {
+							int horas = (hora.hora_f - hora.hora_i);
+							System.out.println(empleado.nombre + " ha realizado " + horas + " horas extra");
+							return;
+						}
+					}
+
+				}
 			}
-			System.out.println("No existe un DNI correspondiente al introducido");
-			}
+			System.out.println("Ese empleado no tiene horas extra.");
+
 		}
+
 	}
 
 	/**
@@ -332,18 +400,20 @@ public class Main {
 	 */
 	public static void consultarHorasExtraID() {
 		String dniEmpleado = null;
+		Empleado empleado = null;
 
-		while (true){
+		while (true) {
 			int idEmpleado = leerEntero("Introduce el ID del empleado: ");
 
-			for (Empleado empleado : empleados) {
-			    if (empleado.id ==idEmpleado){
-					dniEmpleado = empleado.dni;
+			for (Empleado empleadoTemp: empleados) {
+				if (empleadoTemp.id == idEmpleado) {
+					empleado = empleadoTemp;
+					dniEmpleado = empleadoTemp.dni;
 				}
 			}
-			if (dniEmpleado != null){
+			if (dniEmpleado != null) {
 				break;
-			}else {
+			} else {
 				System.out.println("No se ha encontrado un empleado con ese ID.");
 
 			}
@@ -351,13 +421,14 @@ public class Main {
 
 
 		for (HorasExtra hora: horasExtra) {
-				if (hora.nif.equals(dniEmpleado)) {
-					int horas = (hora.hora_f - hora.hora_i);
-					System.out.println("Pepe ha realizado " + horas + " horas extra");
-					return;
-				}
-				System.out.println("No existe un DNI correspondiente al introducido");
+			if (hora.nif.equals(dniEmpleado)) {
+				int horas = (hora.hora_f - hora.hora_i);
+				System.out.println(empleado.nombre + " ha realizado " + horas + " horas extra");
+				return;
 			}
+
+		}
+		System.out.println("Ese empleado no tiene horas extra.");
 	}
 
 	/**
@@ -388,11 +459,12 @@ public class Main {
 				}
 			}
 
-			System.out.println("El grupo de cotizacion " + grupoCotizacion.id + " tiene un coste salarial de " + grupoCotizacion.sueldoBase * empleadosPorGrupo + "€");
-		}
-		for (Empleado empleado: empleados) {
+			if (grupoCotizacion.id == categoria) {
+				System.out.println("El grupo de cotizacion " + grupoCotizacion.id + " tiene un coste salarial de " + grupoCotizacion.sueldoBase * empleadosPorGrupo + "€");
 
+			}
 		}
+
 
 	}
 
@@ -404,12 +476,12 @@ public class Main {
 
 		for (Departamento departamento: departamentos) {
 			int costeDepartamento = 0;
-			if (departamento.id == idDepartamento){
+			if (departamento.id == idDepartamento) {
 
-				for (Empleado empleado : empleados) {
-					if(empleado.departamento == idDepartamento){
-						for (GrupoCotizacion grupoCotizacion : gruposCotizacion) {
-						    if(empleado.grupCotizacion == grupoCotizacion.id){
+				for (Empleado empleado: empleados) {
+					if (empleado.departamento == idDepartamento) {
+						for (GrupoCotizacion grupoCotizacion: gruposCotizacion) {
+							if (empleado.grupCotizacion == grupoCotizacion.id) {
 								costeDepartamento += grupoCotizacion.sueldoBase;
 							}
 						}
@@ -503,7 +575,7 @@ public class Main {
 			int idEmpleado = leerEntero("Introduce el ID del empleado a buscar");
 			for (Empleado empleado: empleados) {
 				if (empleado.id == idEmpleado) {
-					imprimirDatosEmpleado( empleado);
+					imprimirDatosEmpleado(empleado);
 					return;
 				}
 			}
@@ -525,22 +597,24 @@ public class Main {
 	/**
 	 * autor/es: Jose Vicente Ebri,  Jonathan Taban
 	 */
-
-
 	public static void buscarEmpleadoPorDepartamento() {
 		while (true) {
 
+			boolean flag = false;
 			int idDepartamento = leerEntero("Introduce el ID del departamento:");
 			for (Empleado empleado: empleados) {
 				if (empleado.departamento == idDepartamento) {
 					for (Departamento departamento: departamentos) {
 						if (departamento.id == idDepartamento) {
+							flag = true;
 							System.out.printf("ID: %-12s Empleado: %-12s Departamento: %-12s \n", empleado.id, empleado.nombre, departamentos.get(departamentos.indexOf(departamento)).nombre);
-							return;
 						}
 					}
 
 				}
+			}
+			if (flag) {
+				return;
 			}
 			System.out.println("No se ha encontrado un departamento con ese id");
 		}
@@ -555,6 +629,8 @@ public class Main {
 	public static void incorporarTrabajador() {
 		Empleado empleado = crearEmpleado();
 		empleados.add(empleado);
+		System.out.println("Se ha creado un nuevo empleado");
+		guardado = false;
 	}
 
 	//TODO: Puedes añadir departamentos, grupos y categorias que no existen
@@ -587,6 +663,8 @@ public class Main {
 
 		Departamento departamento = new Departamento(id, nombre);
 		departamentos.add(departamento);
+		System.out.println("Se ha creado un nuevo departamento");
+		guardado = false;
 	}
 
 	//---------------- Modificar ----------------
@@ -601,27 +679,31 @@ public class Main {
 
 			int id = leerEntero("Introduce el ID del empleado a modificar:");
 
-			if (id <= empleados.size()) {
+			for (Empleado empleado: empleados) {
+				if (id == empleado.id) {
 
-				imprimirDatosEmpleado(buscarEmpleadoID(id));
-				System.out.println("...................");
+					imprimirDatosEmpleado(buscarEmpleadoID(id));
+					System.out.println("...................");
 
-				System.out.println("\nIntroduce los datos modificados: \n");
-				Empleado empleadoAModificar = crearEmpleado();
+					System.out.println("\nIntroduce los datos modificados: \n");
+					Empleado empleadoAModificar = crearEmpleado();
 
-				empleadoAModificar.id = id;
-				empleados.set(empleados.indexOf(buscarEmpleadoID(id)), empleadoAModificar);
-				for (Empleado empleado: empleados) {
+					empleadoAModificar.id = id;
+					empleados.set(empleados.indexOf(buscarEmpleadoID(id)), empleadoAModificar);
+
 					imprimirDatosEmpleado(empleado);
+					guardado = false;
+
+					return;
+
+				} else {
+
+					System.out.println("Opcion no valida.");
+
 				}
-				return;
-
-			} else {
-
-				System.out.println("Opcion no valida.");
-
 			}
 		}
+
 
 	}
 
@@ -655,6 +737,8 @@ public class Main {
 				case "si":
 					if (numEmpleados <= 0) {
 						departamentos.remove(departamento);
+						guardado = false;
+
 						return;
 					}
 
@@ -678,7 +762,7 @@ public class Main {
 								}
 
 								departamentos.remove(departamento);
-
+								guardado = false;
 								return;
 							case "no":
 								System.out.println("Eliminacion cancelada");
@@ -707,47 +791,50 @@ public class Main {
 	 * autor/es: Pere Prior
 	 */
 	public static void eliminarDatosEmpleado() {
-		int id = leerEntero("Introduce el ID del empleado");
-
-		Empleado empleado = null;
-
-		for (int i = 0; i < empleados.size(); i++) {
-
-			empleado = empleados.get(i);
-
-			if (empleado.id == id) {
-				break;
-			}
-
-		}
-
-		if (empleado == null) {
-
-			System.out.println("No se ha encontrado ningun empleado con el id " + id);
-			return;
-
-		}
-
-		System.out.println("Va a eliminar el empleado" + empleado.nombre);
 
 		while (true) {
 
-			String decision = leerCadena("Quieres continuar? (si/no)");
+			int id = leerEntero("Introduce el ID del empleado");
 
-			switch (decision) {
 
-				case "si":
-					empleados.remove(empleado);
-					return;
+			for (int i = 0; i < empleados.size(); i++) {
 
-				case "no":
-					System.out.println("Eliminacion cancelada");
-					return;
+				Empleado empleado = empleados.get(i);
 
-				default:
-					System.out.println("Introduce una respuesta valida");
+				if (empleado.id == id) {
+
+
+					System.out.println("Va a eliminar el empleado " + empleado.nombre);
+
+					while (true) {
+
+						String decision = leerCadena("Quieres continuar? (si/no)");
+
+						switch (decision) {
+
+							case "si":
+								empleados.remove(empleado);
+								System.out.println("Se ha eliminado el empleado");
+								guardado = false;
+
+								return;
+
+							case "no":
+								System.out.println("Eliminacion cancelada");
+								return;
+
+							default:
+								System.out.println("Introduce una respuesta valida");
+						}
+					}
+				}
+
+
 			}
+			System.out.println("No se ha encontrado ningun empleado con el id " + id);
+			return;
 		}
+
 
 	}
 
@@ -757,6 +844,7 @@ public class Main {
 	/**
 	 * autor/es: Óscar Fernandez
 	 */
+
 	public static void escribirCSVs() {
 		if (empleados != null) {
 			System.out.println("Escribiendo CSV de Empleado.csv...");
@@ -832,6 +920,7 @@ public class Main {
 	/**
 	 * autor/es: Jonathan
 	 */
+	//TODO: Si no se han guardado los datos 	que se avise al usuario antes de salir
 	public static void menu() {
 
 		do {
@@ -854,10 +943,21 @@ public class Main {
 					break;
 				case 4:
 					escribirCSVs();
-
+					esperarEnter();
+					guardado = true;
 					break;
 				case 0:
+
+
+					boolean cerrar = comprobarSiCerrar();
+					if (!cerrar) {
+						eleccion = -1;
+					} else {
+						eleccion = 0;
+						continue;
+					}
 					break;
+
 				default:
 					System.out.println("Opcion inválida");
 					continue;
@@ -869,6 +969,7 @@ public class Main {
 
 	}
 
+
 	/**
 	 * autor/es: Jonathan
 	 */
@@ -877,7 +978,7 @@ public class Main {
 		do {
 			limpiarPantalla();
 
-			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Empleados y departamentos", "2.Horas Extra", "3.Coste Salarial", "4.Volver al Inicio", "0.Salir"));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Empleados y departamentos", "2.Horas Extra", "3.Coste Salarial", "4.Ir al menu anterior", "0.Salir"));
 
 			switch (eleccion) {
 				case 1:
@@ -890,9 +991,16 @@ public class Main {
 					MenuCosteSalarial();
 					break;
 				case 4:
-					menu();
-					break;
+					return;
+
 				case 0:
+					boolean cerrar = comprobarSiCerrar();
+					if (!cerrar) {
+						eleccion = -1;
+					} else {
+						eleccion = 0;
+						continue;
+					}
 					break;
 				default:
 					System.out.println("Opcion invalida");
@@ -911,7 +1019,7 @@ public class Main {
 		do {
 			limpiarPantalla();
 
-			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Todos los Empleado", "2.Empleado por DNI", "3.Empleados en un departamento", "4.Numero de empleados por Dep.", "5.empleados por categorias", "6.Empleado por ID", "7.Volver al Inicio", "0.Salir", "", "", ""));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Todos los Empleado", "2.Empleado por DNI", "3.Empleados en un departamento", "4.Numero de empleados por Dep.", "5.empleados por categorias", "6.Empleado por ID", "7.Ir al menu anterior", "0.Salir", "", "", ""));
 
 			switch (eleccion) {
 				case 1:
@@ -943,9 +1051,16 @@ public class Main {
 					esperarEnter();
 					break;
 				case 7:
-					menu();
-					break;
+					return;
+
 				case 0:
+					boolean cerrar = comprobarSiCerrar();
+					if (!cerrar) {
+						eleccion = -1;
+					} else {
+						eleccion = 0;
+						continue;
+					}
 					break;
 				default:
 					System.out.println("Opcion Invalida");
@@ -963,7 +1078,7 @@ public class Main {
 		do {
 			limpiarPantalla();
 
-			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Horas Extra por ID", "2.Horas Extra por DNI", "3.Volver al Inicio", "0.Salir", "", ""));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Horas Extra por ID", "2.Horas Extra por DNI", "3.Ir al menu anterior", "0.Salir", ""));
 
 			switch (eleccion) {
 				case 1:
@@ -975,9 +1090,16 @@ public class Main {
 					esperarEnter();
 					break;
 				case 3:
-					menu();
-					break;
+					return;
+
 				case 0:
+					boolean cerrar = comprobarSiCerrar();
+					if (!cerrar) {
+						eleccion = -1;
+					} else {
+						eleccion = 0;
+						continue;
+					}
 					break;
 				default:
 					System.out.println("Opcion invalida");
@@ -995,7 +1117,7 @@ public class Main {
 
 		do {
 			limpiarPantalla();
-			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Coste por Grupo Cotizacion", "2.Coste Salarial Departamento", "3.Volver al Inicio", "0.Salir", "", ""));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Coste por Grupo Cotizacion", "2.Coste Salarial Departamento", "3.Ir al menu anterior", "0.Salir", "", ""));
 
 			switch (eleccion) {
 				case 1:
@@ -1008,9 +1130,16 @@ public class Main {
 
 					break;
 				case 3:
-					menu();
-					break;
+					return;
+
 				case 0:
+					boolean cerrar = comprobarSiCerrar();
+					if (!cerrar) {
+						eleccion = -1;
+					} else {
+						eleccion = 0;
+						continue;
+					}
 					break;
 				default:
 					System.out.println("Opcion invalida");
@@ -1028,7 +1157,7 @@ public class Main {
 
 		do {
 			limpiarPantalla();
-			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Nuevos Empleados", "2.Nuevos Departamentos", "3.Volver al Inicio", "0.Salir", ""));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Nuevos Empleados", "2.Nuevos Departamentos", "3.Ir al menu anterior", "0.Salir", ""));
 
 			switch (eleccion) {
 				case 1:
@@ -1041,8 +1170,17 @@ public class Main {
 
 					break;
 				case 3:
-					menu();
+					return;
+				case 0:
+					boolean cerrar = comprobarSiCerrar();
+					if (!cerrar) {
+						eleccion = -1;
+					} else {
+						eleccion = 0;
+						continue;
+					}
 					break;
+
 				default:
 					System.out.println("Opcion inválida");
 					esperarEnter();
@@ -1061,7 +1199,7 @@ public class Main {
 
 		do {
 			limpiarPantalla();
-			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Modificar Datos Empleado", "2.Eliminar Datos Departamentos", "3.Eliminar Datos Personales", "4.Volver al Inicio", "0.Salir"));
+			eleccion = leerEntero(String.format(lineaSup + "\n| %-30s | %-30s | %-30s | %-30s | %-30s |\n" + lineaInf, "1.Modificar Datos Empleado", "2.Eliminar Datos Departamentos", "3.Eliminar Datos Empleado", "4.Ir al menu anterior", "0.Salir"));
 
 			switch (eleccion) {
 				case 1:
@@ -1080,9 +1218,15 @@ public class Main {
 
 					break;
 				case 4:
-					menu();
-					break;
+					return;
 				case 0:
+					boolean cerrar = comprobarSiCerrar();
+					if (!cerrar) {
+						eleccion = -1;
+					} else {
+						eleccion = 0;
+						continue;
+					}
 					break;
 				default:
 					System.out.println("Opcion inválida");

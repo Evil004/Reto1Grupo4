@@ -1,13 +1,13 @@
-$file_groups=Import-Csv -Path departamento.csv 
-foreach ($group in $file_groups) { 
+$file_groups=Import-Csv -Path departamento.csv
+foreach ($group in $file_groups) {
   New-LocalGroup -Name $group.nombre -Description $group.descripcion
 }
 
-$file_users=Import-Csv -Path empleado.csv 
-foreach ($user in $file_users) { 
+$file_users=Import-Csv -Path empleado.csv
+foreach ($user in $file_users) {
   $clave=ConvertTo-SecureString $user.contraseña -AsPlainText -Force
-  New-LocalUser $user.cuenta -Password $clave -FullName $user.nombre -PasswordNeverExpires $false -AccountNeverExpires 
-  
+  New-LocalUser $user.cuenta -Password $clave -FullName $user.nombre -PasswordNeverExpires $false -AccountNeverExpires
+
   net user $user.cuenta /logonpasswordchg:yes
 
 
@@ -17,6 +17,6 @@ foreach ($user in $file_users) {
 
   foreach ($Group in $Groups){
     Add-LocalGroupMember -Group $Group -Member $user.cuenta
-  
+
   }
 }
