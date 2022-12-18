@@ -1,3 +1,30 @@
-cuenta,contraseña,departamento,nombre_apellidos,descripcion
-salabaus,12345713-J,Comercial,SUSANA ALABAU SANCHO,Usuario de Susana Alabau
-
+contraseña,cuenta,departamento,nombre
+12345712-H,jbustosm,COMERCIAL,Jorge Muñoz Bustos
+12345695-R,fcamposg,COMERCIAL,Francisco Campos Gomis
+12345694-Q,icarvalhoa,COMERCIAL,Isabel Carvalho Alabau
+12345700-W,jcarvalhog,COMERCIAL,Jorge Carvalho Gomis
+12345704-A,pchavesa,COMERCIAL,Pedro Chaves Alabau
+12345698-U,ichavesj,COMERCIAL,Ignacio Chaves Juan
+12345697-T,mjuanp,COMERCIAL,Miriam Juan Pujol
+12345686-I,mjuanv,COMERCIAL,Miriam Juan Valencia
+12345696-S,bmonchoc,COMERCIAL,Basilio Moncho Coelo
+12345710-G,jalbac,COMPTABILITAT,Johan Alba Chaves
+12345705-B,palbag,COMPTABILITAT,Piedad Alba Gomis
+12345693-P,salbam,COMPTABILITAT,Sara Alba Moncho
+12345701-X,aalabauv,INFORMATICA,Antonio Alabau Valencia
+12345688-K,lalbaa,INFORMATICA,Laura Alba Arias
+12345689-L,jcarvalhop,INFORMATICA,Jorge Carvalho Pellicer
+12345706-C,mcarvalhov,INFORMATICA,Manuel Carvalho Valencia
+12345692-O,pchavesc,INFORMATICA,Pepe Chaves Campos
+12345709-F,rchavesc,INFORMATICA,Rodrigo Chaves Campos
+12345687-J,ichavesv,INFORMATICA,Ignacio Chaves Vargas
+12345702-Y,cgomisc,INFORMATICA,Claudio Gomis Campos
+12345691-N,cmochoa,INFORMATICA,Claudio Moncho Aguilar
+12345708-E,emonchoc,INFORMATICA,Eva Moncho Carvalho
+12345685-H,bpujolg,INFORMATICA,Basilio Pujol Gomis
+12345703-Z,svalenciam,INFORMATICA,Susana Valencia Moncho
+12345699-V,lalbaal,PERSONAL,Laura Alba Alabau
+12345711-H,baparicior,PERSONAL,Benito Aparicio Rojales
+12345690-M,acamposg,PERSONAL,Antonio Campos Gallego
+12345707-D,jcamposg,PERSONAL,Javier Campos Vargas
+12345713-H,bcanavarop,PERSONAL,Beatriz Carvalho Porta
