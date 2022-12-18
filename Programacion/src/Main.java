@@ -33,6 +33,7 @@ public class Main {
 	public static void main(String[] args) {
 
 		if (leerCarpeta()) {
+			comprobarConsola();
 			menu();
 		}
 	}
@@ -43,6 +44,26 @@ public class Main {
 	/**
 	 * autor/es: Óscar Fernandez
 	 */
+
+
+	public static void comprobarConsola() {
+		while (true) {
+			System.out.println("Para que este programa se vea correctamente, necesitas una consola con 166 columnas o mas.");
+			System.out.println("Si ves la linea de abajo con cortes o saltos de linea, es que tu consola no tiene 166 columnas o mas. Por favor redimensiona la consola.");
+			System.out.println(lineaSup);
+			String eleccion = leerCadena("Ves bien la linea de arriba? (si/no)");
+			switch (eleccion) {
+				case "si":
+					return;
+				case "no":
+					System.out.println("Por favor redimensiona la consola.");
+
+					break;
+				default:
+					System.out.println("Por favor, introduce una opcion valida.");
+			}
+		}
+	}
 
 	private static boolean comprobarSiCerrar() {
 		boolean cerrar = true;
@@ -169,12 +190,12 @@ public class Main {
 		boolean hayHorasExtra = false;
 
 
-		if (carpeta.listFiles() == null){
+		if (carpeta.listFiles() == null) {
 			try {
-				System.out.println("No se ha encontrado la carpeta CSVs en la ruta: "+ carpeta.getCanonicalPath());
+				System.out.println("No se ha encontrado la carpeta CSVs en la ruta: " + carpeta.getCanonicalPath());
 
-			}catch (IOException e){
-				System.out.println("No se ha encontrado la carpeta CSVs en la ruta: "+ carpeta.getAbsolutePath());
+			} catch (IOException e) {
+				System.out.println("No se ha encontrado la carpeta CSVs en la ruta: " + carpeta.getAbsolutePath());
 			}
 			return false;
 		}
@@ -215,13 +236,13 @@ public class Main {
 				System.out.println("\t" + departamentosCSV);
 			}
 			if (!hayEmpleados) {
-				System.out.println("\t" +empleadosCSV);
+				System.out.println("\t" + empleadosCSV);
 			}
 			if (!hayGruposCotizacion) {
-				System.out.println("\t" +grupoCotizacionCSV);
+				System.out.println("\t" + grupoCotizacionCSV);
 			}
 			if (!hayHorasExtra) {
-				System.out.println("\t" +horasExtraCSV);
+				System.out.println("\t" + horasExtraCSV);
 			}
 
 			try {
@@ -234,7 +255,6 @@ public class Main {
 			esperarEnter();
 			return false;
 		}
-
 
 
 		return true;
