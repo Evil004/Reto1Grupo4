@@ -41,6 +41,34 @@ public class Main {
 	/**
 	 * autor/es: Óscar Fernandez
 	 */
+
+	private static boolean comprobarSiCerrar() {
+		boolean cerrar = true;
+		if (!guardado) {
+
+			boolean flag = true;
+			while (flag) {
+				String eleccion = leerCadena("Vas a cerrar el programa, pero tienes datos sin guardar, estas seguro? (si/no)");
+				switch (eleccion) {
+
+					case "si":
+						flag = false;
+						cerrar = true;
+						break;
+					case "no":
+						flag = false;
+						break;
+					default:
+						System.out.println("No has introducido una opcion valida.");
+				}
+			}
+
+		}
+		return cerrar;
+	}
+	/**
+	 * autor/es: Óscar Fernandez
+	 */
 	// Leer un string del usuario
 	public static int leerEntero(String mensaje) throws InputMismatchException {
 		int numero;
@@ -893,30 +921,7 @@ public class Main {
 
 	}
 
-	private static boolean comprobarSiCerrar() {
-		boolean cerrar = false;
-		if (!guardado) {
 
-			boolean flag = true;
-			while (flag) {
-				String eleccion = leerCadena("Vas a cerrar el programa, pero tienes datos sin guardar, estas seguro? (si/no)");
-				switch (eleccion) {
-
-					case "si":
-						flag = false;
-						cerrar = true;
-						break;
-					case "no":
-						flag = false;
-						break;
-					default:
-						System.out.println("No has introducido una opcion valida.");
-				}
-			}
-
-		}
-		return cerrar;
-	}
 
 	/**
 	 * autor/es: Jonathan
