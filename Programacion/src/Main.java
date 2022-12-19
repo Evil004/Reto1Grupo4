@@ -32,8 +32,7 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		if (leerCarpeta()) {
-			comprobarConsola();
+		if (leerCarpeta() && comprobarConsola()) {
 			menu();
 		}
 	}
@@ -46,7 +45,7 @@ public class Main {
 	 */
 
 
-	public static void comprobarConsola() {
+	public static boolean comprobarConsola() {
 		while (true) {
 			System.out.println("Para que este programa se vea correctamente, necesitas una consola con 166 columnas o mas.");
 			System.out.println("Si ves la linea de abajo con cortes o saltos de linea, es que tu consola no tiene 166 columnas o mas. Por favor redimensiona la consola.");
@@ -54,11 +53,10 @@ public class Main {
 			String eleccion = leerCadena("Ves bien la linea de arriba? (si/no)");
 			switch (eleccion) {
 				case "si":
-					return;
+					return true;
 				case "no":
 					System.out.println("Por favor redimensiona la consola.");
-
-					break;
+					return false;
 				default:
 					System.out.println("Por favor, introduce una opcion valida.");
 			}
