@@ -67,5 +67,6 @@ Y para ejecutar el script y el programa usamos:
 
 *2.1: Están en una misma opcion debido a que nosotros no hemos separado los datos de la empresa
 y los datos personales.
+
 **3.1: Están en una misma opcion debido a que nosotros no hemos separado los datos de la empresa
 y los datos personales.
