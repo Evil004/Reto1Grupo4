@@ -21,7 +21,7 @@ cd Reto1Grupo4
 ./run.bat
 ~~~
 
-### Ejecutar desde archivo ya compilado.
+### Ejecutar programa ya compilado
 Acceder a este [enlace](https://github.com/Evil004/Reto1Grupo4/releases) y descargar el .zip con el programa ya compilado.
 
 Una vez descargado hay que decomprimir la carpeta, entramos en la carpeta y contendra una carpeta, un archivo ejecutable 
