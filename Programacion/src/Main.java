@@ -548,7 +548,6 @@ public class Main {
 		System.out.println("Categoria Grupo Profesional: " + empleado.catGrupProfesional);
 		System.out.println("Grupo cotizacion: " + empleado.grupCotizacion);
 
-		//TODO: Imprime varios departamentos en algunos empleados
 		for (Departamento departamento: departamentos) {
 
 			if (departamento.id == empleado.departamento) {
@@ -947,7 +946,6 @@ public class Main {
 	/**
 	 * autor/es: Jonathan
 	 */
-	//TODO: Si no se han guardado los datos 	que se avise al usuario antes de salir
 	public static void menu() {
 
 		do {

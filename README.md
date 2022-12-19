@@ -1,4 +1,4 @@
-# Programa para la gestion de el organigrama empresarial
+# Programa para la gestion del organigrama empresarial
 
 ## Instalacion y ejecucion
 Para instalar y ejecutar el programa hay 2 maneras, clonando el 
@@ -43,3 +43,29 @@ Y para ejecutar el script y el programa usamos:
 ~~~ shell
 ./startLinux.sh
 ~~~
+
+
+## Relacion
+
+| Miguel | Programacion |
+| -- | -- |
+| 1 | 1.1.2 |
+| 2 | 1.1.3 |
+| 3 | 1.2.1 |
+| 4 | 1.1.4 |
+| 5 | 1.1.5 |
+| 6 | 1.3.1 |
+| 7 | 1.2.2 |
+| 8 | 1.3.2 |
+| 9 | 2.1* |
+| 10 | 2.1* |
+| 11 | 2.2 |
+| 12 | 3.1** |
+| 13 | 3.1** |
+| 14 | 3.2 |
+| 15 | 3.3 |
+
+*2.1: Están en una misma opcion debido a que nosotros no hemos separado los datos de la empresa
+y los datos personales.
+**3.1: Están en una misma opcion debido a que nosotros no hemos separado los datos de la empresa
+y los datos personales.
